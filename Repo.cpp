@@ -37,6 +37,23 @@ Player Repo::getById(string id)
 	return Player{};
 }
 
+Player Repo::getByIndex(int idx)
+{
+	for (int i = 0; i < players.size(); i++)
+		if (i == idx)
+			return players[i];
+	return Player();
+}
+
+bool Repo::existsByName(string name)
+{
+	for (const Player& p : players) {
+		if (p.getName() == name)
+			return true;
+	}
+	return false;
+}
+
 int Repo::getSize()
 {
 	return players.size();

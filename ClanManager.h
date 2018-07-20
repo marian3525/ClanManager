@@ -60,11 +60,13 @@ private:
 
 	QPushButton* removePlayerButton;
 
+	QAction* loadFreshData;
+
 	void bindWidgets();
 	void addHeaders();
 	void update();
 	void populateRows();
-
+public slots:
 	void onDonationsSelected();
 	void onRequestsSelected();
 	void onAttacksSelected();
@@ -92,4 +94,6 @@ private:
 	void onNoShowSecond();
 
 	void onRemove();
+
+	void onLoadFreshData();
 };

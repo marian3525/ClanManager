@@ -10,8 +10,8 @@ public:
 	pair<int, int> getPercent() const { pair<int, int> a(percentFirst, percentSecond); return a; }
 	pair<int, int> getEnemy() const { pair<int, int> a(enemyFirst, enemySecond); return a; }
 	int getPerformance();
+	string toString() const;
 
-	~AttackPair();
 private:
 	int attackerLevel;
 	int starsFirst=-1, starsSecond=-1;

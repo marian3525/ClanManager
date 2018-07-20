@@ -7,7 +7,6 @@ ClanManager::ClanManager(Controller* controller, QWidget *parent)
 	ui.setupUi(this);
 	this->controller = controller;
 	int numberOfPlayers = controller->getSize();
-	playerList = findChild<QTableView*>("playerList");
 	model = new QStandardItemModel(50, 7, this);
 
 	bindWidgets();
@@ -15,6 +14,7 @@ ClanManager::ClanManager(Controller* controller, QWidget *parent)
 	addHeaders();
 	update();
 	populateRows();
+	
 }
 
 void ClanManager::notify()
@@ -27,6 +27,8 @@ void ClanManager::notify()
 
 void ClanManager::bindWidgets()
 {
+	playerList = findChild<QTableView*>("playerList");
+	playerList->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	donations = findChild<QRadioButton*>("donationsRadio");
 	requests = findChild<QRadioButton*>("requestsRadio");
 	attacks = findChild<QRadioButton*>("attacksRadio");
@@ -64,6 +66,8 @@ void ClanManager::bindWidgets()
 
 	removePlayerButton = findChild<QPushButton*>("removePlayer");
 
+	loadFreshData = findChild<QAction*>("actionLoadFreshData");
+
 	connect(donations, &QRadioButton::clicked, this, &ClanManager::onDonationsSelected);
 	connect(requests, &QRadioButton::clicked, this, &ClanManager::onRequestsSelected);
 	connect(attacks, &QRadioButton::clicked, this, &ClanManager::onAttacksSelected);
@@ -89,6 +93,9 @@ void ClanManager::bindWidgets()
 	connect(second3Star, &QRadioButton::clicked, this, &ClanManager::onSecond3Star);
 
 	connect(removePlayerButton, &QPushButton::clicked, this, &ClanManager::onRemove);
+
+	//in the menu:
+	connect(loadFreshData, &QAction::triggered, this, &ClanManager::onLoadFreshData);
 }
 
 void ClanManager::addHeaders()
@@ -105,12 +112,14 @@ void ClanManager::addHeaders()
 	playerList->setColumnWidth(4, 63);
 	playerList->setColumnWidth(5, 70); 
 	playerList->setColumnWidth(6, 65);
-	
+	playerList->setColumnWidth(7, 55);
+	playerList->setColumnWidth(8, 60);
+	playerList->setColumnWidth(9, 60);
 }
 
 void ClanManager::update()
 {
-
+	memberCounter->display(controller->getSize());
 }
 
 void ClanManager::populateRows()
@@ -268,5 +277,13 @@ void ClanManager::onRemove()
 		qDebug() << str << endl;
 		//controller->removePlayer();
 	}
+}
+
+void ClanManager::onLoadFreshData()
+{
+	QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Select Fresh Data file"), "", tr("CSV files (*.csv)"));
+	//use only the first path and add double // as file separators
+	string path = fileNames[0].toStdString();
+	controller->importUpdatedData(path);
 }
 	

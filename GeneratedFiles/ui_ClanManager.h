@@ -36,6 +36,7 @@ QT_BEGIN_NAMESPACE
 class Ui_ClanManagerClass
 {
 public:
+    QAction *actionLoadFreshData;
     QWidget *centralWidget;
     QWidget *gridLayoutWidget;
     QGridLayout *gridLayout;
@@ -100,6 +101,9 @@ public:
         QFont font;
         font.setPointSize(10);
         ClanManagerClass->setFont(font);
+        actionLoadFreshData = new QAction(ClanManagerClass);
+        actionLoadFreshData->setObjectName(QStringLiteral("actionLoadFreshData"));
+        actionLoadFreshData->setAutoRepeat(false);
         centralWidget = new QWidget(ClanManagerClass);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         gridLayoutWidget = new QWidget(centralWidget);
@@ -515,7 +519,7 @@ public:
         removePlayer->raise();
         menuBar = new QMenuBar(ClanManagerClass);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 1631, 25));
+        menuBar->setGeometry(QRect(0, 0, 1631, 21));
         menuActions = new QMenu(menuBar);
         menuActions->setObjectName(QStringLiteral("menuActions"));
         menuOptions = new QMenu(menuBar);
@@ -530,6 +534,7 @@ public:
 
         menuBar->addAction(menuActions->menuAction());
         menuBar->addAction(menuOptions->menuAction());
+        menuActions->addAction(actionLoadFreshData);
 
         retranslateUi(ClanManagerClass);
 
@@ -539,6 +544,10 @@ public:
     void retranslateUi(QMainWindow *ClanManagerClass)
     {
         ClanManagerClass->setWindowTitle(QApplication::translate("ClanManagerClass", "ClanManager", nullptr));
+        actionLoadFreshData->setText(QApplication::translate("ClanManagerClass", "Load fresh data", nullptr));
+#ifndef QT_NO_WHATSTHIS
+        actionLoadFreshData->setWhatsThis(QApplication::translate("ClanManagerClass", "Load fresh data from a .csv file", nullptr));
+#endif // QT_NO_WHATSTHIS
         donationsRadio->setText(QApplication::translate("ClanManagerClass", "Donations", nullptr));
         requestsRadio->setText(QApplication::translate("ClanManagerClass", "Requests", nullptr));
         attacksRadio->setText(QApplication::translate("ClanManagerClass", "Attacks", nullptr));

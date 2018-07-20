@@ -1975,13 +1975,14 @@
      <x>0</x>
      <y>0</y>
      <width>1631</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuActions">
     <property name="title">
      <string>Actions</string>
     </property>
+    <addaction name="actionLoadFreshData"/>
    </widget>
    <widget class="QMenu" name="menuOptions">
     <property name="title">
@@ -2000,6 +2001,17 @@
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionLoadFreshData">
+   <property name="text">
+    <string>Load fresh data</string>
+   </property>
+   <property name="whatsThis">
+    <string>Load fresh data from a .csv file</string>
+   </property>
+   <property name="autoRepeat">
+    <bool>false</bool>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>

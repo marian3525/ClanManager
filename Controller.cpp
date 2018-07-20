@@ -6,7 +6,7 @@
 Controller::Controller()
 {	
 	//TODO add a menu to select the absolute path in a file browser
-	string fname = "D:\\Projects\\C++\\ClanManager\\ClanManager\\#LR0LGRVR - 2018-07-18 16-00-52.csv";
+	string fname = "#LR0LGRVR - 2018-07-18 16-00-52.csv";
 	importUpdatedData(fname);
 	computeMetrics();
 	writeCSV();
@@ -17,6 +17,21 @@ void Controller::loadStats()
 	/*
 		Load stats from a file (war performances & long term behaviour)
 	*/
+	ifstream f("playerStats.stats");
+}
+
+void Controller::storeStats()
+{
+	/*
+		Store stats in a file as persistent storage
+	*/
+	ofstream f("playerStats.stats");
+	/*
+		Store each player's stats
+	*/
+	for (const Player& player : repo.getAll()) {
+		f << player.toString() << endl;
+	}
 }
 
 void Controller::removePlayer(string tag)
@@ -25,11 +40,23 @@ void Controller::removePlayer(string tag)
 	notifyObservers();
 }
 
+void Controller::updatePlayer(const Player & player)
+{
+	Player& p = repo.getByName(player.getName());
+
+	p = player;
+
+	notifyObservers();
+}
+
 void Controller::importUpdatedData(string path)
 {
 	/*
 		Load fresh data from the .csv dowloaded from clashofstats
 	*/
+	//convert the separators from / to //
+	path.replace(path.begin(), path.end(), '/', '//');
+
 	ifstream f(path);
 	if (!f.is_open())
 		return;
@@ -101,9 +128,14 @@ void Controller::importUpdatedData(string path)
 
 		Player p{ tag, name, townHall, role, rank, experience, league, trophies, versusTrophies, warStars, legendThophies,
 			attackWins, defenseWins, troopsDonated, troopReceived };
-		repo.add(p);
+
+		if (repo.existsByName(name))
+			updatePlayer(p);
+		else
+			repo.add(p);
 	}
 	f.close();
+	delete line;
 }
 
 void Controller::computeMetrics()
@@ -134,8 +166,17 @@ void Controller::computeMetrics()
 	}
 }
 
+void Controller::addWarAttacks(string playerName, AttackPair warShow)
+{
+	Player& player = repo.getByName(playerName);
+	player.addWarShow(warShow);
+}
+
 void Controller::writeCSV()
 {
+	/*
+		Debug use only!
+	*/
 	ofstream o("stats.csv");
 	ofstream t("table.csv");
 	if (!o.is_open() || !t.is_open())
@@ -147,7 +188,7 @@ Troops Donated,Troops requested,Ratio,Ratio Adjusted,Activity,Contribution";
 	t << header <<endl;
 
 	for (Player p : repo.getAll()) {
-		o << p.toString() << endl;
+		o << p.toStringDebug() << endl;
 		t << p.toStringTable() << endl;
 	}
 	o.close();

@@ -25,105 +25,427 @@ void AttackPair::addAttack(int stars, int enemyLevel, int percent)
 		throw new WarException{ "Both attacks already done" };
 		break;
 	}
-
 }
 
 int AttackPair::getPerformance()
 {
-	if(performance != -1)		//already computed
+	if (performance != -1)		//already computed
 		return performance;
 
-		int score;
-		int th = attackerLevel;
-		int stars;
-		int enemy;
-		int idx = 0;
-		while (idx < 2) {
+	int score;
+	int th = attackerLevel;
+	int stars;
+	int enemy;
+	int idx = 0;
+	while (idx < 2) {
 
-			if (idx % 2 == 0) {
-				stars = starsFirst;
-				enemy = enemyFirst;
+		if (idx % 2 == 0) {
+			stars = starsFirst;
+			enemy = enemyFirst;
+		}
+		else {
+			stars = starsSecond;
+			enemy = enemySecond;
+		}
+
+		idx++;
+
+		if (th == 12) {
+			switch (enemy) {
+			case 12:
+				switch (stars) {
+				case 0:score -= 50; break;
+				case 1:score -= 30; break;
+				case 2:score += 50; break;
+				case 3:score += 100; break;
+				}
+			case 11:
+				switch (stars) {
+				case 0:score -= 100; break;
+				case 1:score -= 50; break;
+				case 2:score += 20; break;
+				case 3:score += 70; break;
+				}
+			case 10:
+				switch (stars) {
+				case 0:score -= 200; break;
+				case 1:score -= 150; break;
+				case 2:score -= 100; break;
+				case 3:score += 50; break;
+				}
+
+			case 9:
+				switch (stars) {
+				case 0:score -= 500; break;
+				case 1:score -= 400; break;
+				case 2:score -= 350; break;
+				case 3:score += 20; break;
+				}
+			default: {
+				switch (stars) {
+				case 0:score -= 700; break;
+				case 1:score -= 700; break;
+				case 2:score -= 700; break;
+				case 3:score += 10; break;
+				}
 			}
-			else {
-				stars = starsSecond;
-				enemy = enemySecond;
 			}
+		}
+		if (th == 11) {
+			switch (enemy) {
+			case 12:
+				switch (stars) {
+				case 0:score -= 30; break;
+				case 1:score -= 10; break;
+				case 2:score += 80; break;
+				case 3:score += 200; break;
+				}
+			case 11:
+				switch (stars) {
+				case 0:score -= 70; break;
+				case 1:score -= 40; break;
+				case 2:score += 50; break;
+				case 3:score += 100; break;
+				}
+			case 10:
+				switch (stars) {
+				case 0:score -= 150; break;
+				case 1:score -= 100; break;
+				case 2:score -= 30; break;
+				case 3:score += 50; break;
+				}
 
-			idx++;
+			case 9:
+				switch (stars) {
+				case 0:score -= 300; break;
+				case 1:score -= 250; break;
+				case 2:score -= 100; break;
+				case 3:score += 20; break;
+				}
+			default: {
+				switch (stars) {
+				case 0:score -= 700; break;
+				case 1:score -= 700; break;
+				case 2:score -= 700; break;
+				case 3:score += 10; break;
+				}
+			}
+			}
+		}
+		if (th == 10) {
+			switch (enemy) {
+			case 12:
+				switch (stars) {
+				case 0:score -= 10; break;
+				case 1:score -= 5; break;
+				case 2:score += 100; break;
+				case 3:score += 300; break;
+				}
+			case 11:
+				switch (stars) {
+				case 0:score -= 30; break;
+				case 1:score -= 10; break;
+				case 2:score += 70; break;
+				case 3:score += 200; break;
+				}
+			case 10:
+				switch (stars) {
+				case 0:score -= 100; break;
+				case 1:score -= 50; break;
+				case 2:score += 10; break;
+				case 3:score += 100; break;
+				}
 
-			if (th == 12) {
-				switch (enemyFirst) {
+			case 9:
+				switch (stars) {
+				case 0:score -= 300; break;
+				case 1:score -= 200; break;
+				case 2:score -= 80; break;
+				case 3:score += 50; break;
+				}
+			default: {
+				switch (stars) {
+				case 0:score -= 700; break;
+				case 1:score -= 700; break;
+				case 2:score -= 700; break;
+				case 3:score += 10; break;
+				}
+			}
+			}
+		}
+		if (th == 10) {
+			switch (enemy) {
+			case 12:
+				switch (stars) {
+				case 0:score -= 10; break;
+				case 1:score -= 5; break;
+				case 2:score += 100; break;
+				case 3:score += 300; break;
+				}
+			case 11:
+				switch (stars) {
+				case 0:score -= 30; break;
+				case 1:score -= 10; break;
+				case 2:score += 70; break;
+				case 3:score += 200; break;
+				}
+			case 10:
+				switch (stars) {
+				case 0:score -= 100; break;
+				case 1:score -= 50; break;
+				case 2:score += 10; break;
+				case 3:score += 100; break;
+				}
+
+			case 9:
+				switch (stars) {
+				case 0:score -= 300; break;
+				case 1:score -= 200; break;
+				case 2:score -= 80; break;
+				case 3:score += 50; break;
+				}
+			default: {
+				switch (stars) {
+				case 0:score -= 700; break;
+				case 1:score -= 700; break;
+				case 2:score -= 700; break;
+				case 3:score += 10; break;
+				}
+			}
+			}
+		}
+		if (th == 9) {
+			switch (enemy) {
+			case 12:
+				switch (stars) {
+				case 0:score -= 5; break;
+				case 1:score += 10; break;
+				case 2:score += 300; break;
+				case 3:score += 500; break;
+				}
+			case 11:
+				switch (stars) {
+				case 0:score -= 10; break;
+				case 1:score -= 5; break;
+				case 2:score += 200; break;
+				case 3:score += 350; break;
+				}
+			case 10:
+				switch (stars) {
+				case 0:score -= 30; break;
+				case 1:score -= 10; break;
+				case 2:score -= 100; break;
+				case 3:score += 250; break;
+				}
+
+			case 9:
+				switch (stars) {
+				case 0:score -= 200; break;
+				case 1:score -= 100; break;
+				case 2:score -= 10; break;
+				case 3:score += 100; break;
+				}
+			default: {
+				switch (stars) {
+				case 0:score -= 700; break;
+				case 1:score -= 700; break;
+				case 2:score -= 700; break;
+				case 3:score += 10; break;
+				}
+			}
+			}
+		}
+		if (th == 8) {
+			switch (enemy) {
+			case 12:
+				switch (stars) {
+				case 0:score -= 5; break;
+				case 1:score += 50; break;
+				case 2:score += 500; break;
+				case 3:score += 700; break;
+				}
+			case 11:
+				switch (stars) {
+				case 0:score -= 5; break;
+				case 1:score += 50; break;
+				case 2:score += 300; break;
+				case 3:score += 500; break;
+				}
+			case 10:
+				switch (stars) {
+				case 0:score -= 10; break;
+				case 1:score -= 5; break;
+				case 2:score += 200; break;
+				case 3:score += 300; break;
+				}
+
+			case 9:
+				switch (stars) {
+				case 0:score -= 50; break;
+				case 1:score -= 30; break;
+				case 2:score += 50; break;
+				case 3:score += 200; break;
+				}
+			case 8:
+				switch (stars) {
+				case 0:score -= 100; break;
+				case 1:score -= 50; break;
+				case 2:score -= 30; break;
+				case 3:score += 100; break;
+				}
+			default: {
+				switch (stars) {
+				case 0:score -= 700; break;
+				case 1:score -= 700; break;
+				case 2:score -= 700; break;
+				case 3:score += 10; break;
+				}
+			}
+			}
+		}
+		if (th == 7) {
+			switch (enemy) {
+			case 12:
+				switch (stars) {
+				case 0:score -= 5; break;
+				case 1:score += 100; break;
+				case 2:score += 700; break;
+				case 3:score += 900; break;
+				}
+			case 11:
+				switch (stars) {
+				case 0:score -= 5; break;
+				case 1:score += 100; break;
+				case 2:score += 500; break;
+				case 3:score += 700; break;
+				}
+			case 10:
+				switch (stars) {
+				case 0:score -= 10; break;
+				case 1:score += 50; break;
+				case 2:score += 200; break;
+				case 3:score += 300; break;
+				}
+
+			case 9:
+				switch (stars) {
+				case 0:score -= 10; break;
+				case 1:score += 20; break;
+				case 2:score += 100; break;
+				case 3:score += 300; break;
+				}
+			case 8:
+				switch (stars) {
+				case 0:score -= 10; break;
+				case 1:score -= 5; break;
+				case 2:score += 50; break;
+				case 3:score += 150; break;
+				}
+			case 7:
+				switch (stars) {
+				case 0:score -= 50; break;
+				case 1:score -= 30; break;
+				case 2:score += 20; break;
+				case 3:score += 100; break;
+				}
+			default: {
+				switch (stars) {
+				case 0:score -= 200; break;
+				case 1:score -= 200; break;
+				case 2:score -= 200; break;
+				case 3:score += 10; break;
+				}
+			}
+			}
+			if (th == 6) {
+				switch (enemy) {
 				case 12:
+					switch (stars) {
+					case 0:score -= 5; break;
+					case 1:score += 100; break;
+					case 2:score += 700; break;
+					case 3:score += 900; break;
+					}
+				case 11:
+					switch (stars) {
+					case 0:score -= 5; break;
+					case 1:score += 100; break;
+					case 2:score += 500; break;
+					case 3:score += 700; break;
+					}
+				case 10:
+					switch (stars) {
+					case 0:score -= 10; break;
+					case 1:score += 90; break;
+					case 2:score += 300; break;
+					case 3:score += 500; break;
+					}
+
+				case 9:
+					switch (stars) {
+					case 0:score -= 10; break;
+					case 1:score += 50; break;
+					case 2:score += 200; break;
+					case 3:score += 400; break;
+					}
+				case 8:
+					switch (stars) {
+					case 0:score -= 10; break;
+					case 1:score += 30; break;
+					case 2:score += 50; break;
+					case 3:score += 150; break;
+					}
+				case 7:
 					switch (stars) {
 					case 0:score -= 50; break;
 					case 1:score -= 30; break;
 					case 2:score += 50; break;
+					case 3:score += 200; break;
+					}
+				case 6:
+					switch (stars) {
+					case 0:score -= 10; break;
+					case 1:score -= 5; break;
+					case 2:score += 50; break;
 					case 3:score += 100; break;
 					}
-				case 11:
+				default: {
 					switch (stars) {
 					case 0:score -= 100; break;
-					case 1:score -= 50; break;
-					case 2:score += 20; break;
-					case 3:score += 70; break;
-					}
-				case 10:
-					switch (starsFirst) {
-					case 0:score -= 200; break;
-					case 1:score -= 150; break;
+					case 1:score -= 100; break;
 					case 2:score -= 100; break;
-					case 3:score += 50; break;
-					}
-
-				case 9:
-					switch (starsFirst) {
-					case 0:score -= 500; break;
-					case 1:score -= 400; break;
-					case 2:score -= 350; break;
-					case 3:score += 20; break;
-					}
-				default: {
-					switch (starsFirst) {
-					case 0:score -= 700; break;
-					case 1:score -= 700; break;
-					case 2:score -= 700; break;
-					case 3:score -= 700; break;
+					case 3:score += 10; break;
 					}
 				}
 				}
-			}
-			if (th == 11) {
-
-			}
-			if (th == 10) {
-
-			}
-			if (th == 9) {
-
-			}
-			if (th == 8) {
-
-			}
-			if (th == 7) {
-
-			}
-			if (th == 6) {
-
-			}
-			if (th == 5) {
-
-			}
-			if (th == 4) {
-
-			}
-			if (th == 3) {
-
 			}
 		}
-		return score;
 	}
+	performance = score;
+	return score;
+}
 
 
-AttackPair::~AttackPair()
+string AttackPair::toString() const
 {
+	/*
+		to .csv format, without the terminating ,
+	*/
+	string str = "";
+	str += to_string(starsFirst);
+	str += ",";
+	str += to_string(starsSecond);
+	str += ",";
+	str += to_string(percentFirst);
+	str += ",";
+	str += to_string(percentSecond);
+	str += ",";
+	str += to_string(enemyFirst);
+	str += ",";
+	str += to_string(enemySecond);
+	str += ",";
+	str += to_string(attacksDone);
+	str += ",";
+	str += to_string(performance);
+	return str;
 }

@@ -7,10 +7,10 @@ class Player
 public:
 	Player();
 	Player(string tag, string name, int townhall, string role, int rank, int experience, string league, int trophies, int versusTrophies,
-		int warStars, int legendTrophies, int attackWins, int defenseWins, int troopsDonated, int troopsRequested) : tag{ tag }, name{ name },
-		townHall{ townhall }, role{ role }, rank{ rank }, experience{ experience }, league{ league }, trophies{ trophies },
-		versusTrophies{ versusTrophies }, warStars{ warStars }, legendTrophies{ legendTrophies }, attackWins{ attackWins }, defenseWins{ defenseWins },
-		troopsDonated{ troopsDonated }, troopsRequested{ troopsRequested } {
+		int warStars, int legendTrophies, int attackWins, int defenseWins, int troopsDonated, int troopsRequested) : tag{ tag }, 
+		name{ name },townHall{ townhall }, role{ role }, rank{ rank }, experience{ experience }, league{ league }, trophies{ trophies },
+		versusTrophies{ versusTrophies }, warStars{ warStars }, legendTrophies{ legendTrophies }, attackWins{ attackWins }, 
+		defenseWins{ defenseWins },troopsDonated{ troopsDonated }, troopsRequested{ troopsRequested } {
 		switch (getTownHall()) {
 		case 1:
 			cc_size = 0;
@@ -71,11 +71,13 @@ public:
 	void setGamesScore(int score);
 
 	int getCcSize() const { return cc_size; }
-
-	string toString();
+	
+	string toString() const;
+	string toStringDebug();
 	string toStringTable();
 
-	void addWarAttack(int outcome, int enemyThLevel);
+	void addWarShow(const AttackPair& warShow);
+	const vector<AttackPair> getWarAttacks() const { return warAttacks; }
 
 private:
 	string tag="";
@@ -105,4 +107,3 @@ private:
 	float ratio=0;
 	float contribution=0;
 };
-

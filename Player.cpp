@@ -30,7 +30,57 @@ void Player::setGamesScore(int score)
 	this->gamesScore = score;
 }
 
-string Player::toString()
+string Player::toString() const
+{
+	string str="";
+
+	str += tag;
+	str += ",";
+	str += name;
+	str += ",";
+	str += to_string(townHall);
+	str += ",";
+	str += role;
+	str += ",";
+	str += to_string(rank);
+	str += ",";
+	str += to_string(experience);
+	str += ",";
+	str += league;
+	str += ",";
+	str += to_string(trophies);
+	str += ",";
+	str += to_string(versusTrophies);
+	str += ",";
+	str += to_string(warStars);
+	str += ",";
+	str += to_string(legendTrophies);
+	str += ","; 
+	str += to_string(attackWins);
+	str += ",";
+	str += to_string(defenseWins);
+	str += ",";
+	str += to_string(troopsDonated);
+	str += ",";
+	str += to_string(troopsRequested);
+	str += ",";
+	str += to_string(ratio);
+	str += ",";
+	str += to_string(ratio_adjusted);
+	str += ",";
+	str += to_string(activity_metric);
+	str += ",";
+	str+=to_string(contribution);
+
+	//add the war stats
+	for (const AttackPair& attack : warAttacks) {
+		str += ",";
+		str += attack.toString();
+	}
+	return str;
+}
+
+string Player::toStringDebug()
 {
 	string str="";
 	str += "Tag: " + tag + ", Name: " + name + ", TH Level: " + to_string(townHall) + ", Role: " + role + ", Rank: " + to_string(rank) +
@@ -54,6 +104,7 @@ string Player::toStringTable()
 	return str;
 }
 
-void Player::addWarAttack(int outcome, int enemyThLevel)
+void Player::addWarShow(const AttackPair & warShow)
 {
+	warAttacks.push_back(warShow);
 }

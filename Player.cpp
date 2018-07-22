@@ -1,10 +1,6 @@
 #include "stdafx.h"
 #include "Player.h"
 
-Player::Player()
-{
-}
-
 void Player::setActivityMetric(float newMetric)
 {
 	this->activity_metric = newMetric;
@@ -32,6 +28,10 @@ void Player::setGamesScore(int score)
 
 string Player::toString() const
 {
+	/*
+		Format: tag,name,th,role,rank,level,league,cups,vscups,warStars,legend,attacks,defenses,donations,requests,ratio,ratio_adj,activity,contribution,
+		playerLevel,stars1,stars2,percent1,percent2,enemy1,enemy2,attacks,performance,date...
+	*/
 	string str="";
 
 	str += tag;
@@ -102,6 +102,60 @@ string Player::toStringTable()
 		"," + to_string(troopsRequested) + "," + to_string(ratio) + "," + to_string(ratio_adjusted) +
 		"," + to_string(activity_metric) + "," + to_string(contribution);
 	return str;
+}
+
+void Player::addWarAttacksFromFile(char* line)
+{
+	/*
+		line-pointer to a line terminated by \n where war attacks are stored in the format provided by AttackPair::toString()
+		will not free the char pointer
+		Add the war attacks found in the line to the player
+		format for each AttackPair: playerLevel,starsFirst,starsSecond,percentFirst,percentSecond,enemyFirst,enemySecond,attackDone,performance,date
+	*/
+	char* ptr;
+	const char* separators=",\n";
+	const int len = strlen(line);
+	//or just ,?
+
+	ptr = strtok(line, separators);
+
+	while (ptr != NULL) {
+		const int playerThLevel = atoi(ptr);
+
+		ptr = strtok(NULL, separators);
+		const int starsFirst = atoi(ptr);
+		
+		ptr = strtok(NULL, separators);
+		const int starsSecond = atoi(ptr);
+
+		ptr = strtok(NULL, separators);
+		const int percentFirst = atoi(ptr);
+
+		ptr = strtok(NULL, separators);
+		const int percentSecond = atoi(ptr);
+
+		ptr = strtok(NULL, separators);
+		const int enemyFirst = atoi(ptr);
+
+		ptr = strtok(NULL, separators);
+		const int enemySecond = atoi(ptr);
+
+		ptr = strtok(NULL, separators);
+		const int attacksDone = atoi(ptr);
+
+		ptr = strtok(NULL, separators);
+		const int performance = atoi(ptr);
+
+		ptr = strtok(NULL, separators);
+		const string date = string(ptr);
+
+		ptr = strtok(NULL, separators);
+
+		AttackPair warShow{ playerThLevel, starsFirst, starsSecond, percentFirst, percentSecond, enemyFirst, enemySecond, 
+			attacksDone, performance, date };
+
+		this->warAttacks.push_back(warShow);
+	}
 }
 
 void Player::addWarShow(const AttackPair & warShow)

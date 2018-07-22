@@ -10,3 +10,8 @@ void Tests::test()
 {
 }
 
+void Tests::testConvertPath()
+{
+	
+}
+

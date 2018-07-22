@@ -124,6 +124,7 @@
     <ClCompile Include="AttackPair.cpp" />
     <ClCompile Include="ClanManager.cpp" />
     <ClCompile Include="Controller.cpp" />
+    <ClCompile Include="ControllerException.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NetworkThread.cpp" />
     <ClCompile Include="Observer.cpp" />
@@ -134,12 +135,15 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Tests.cpp" />
+    <ClCompile Include="Validator.cpp" />
     <ClCompile Include="WarException.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AttackPair.h" />
+    <ClInclude Include="ControllerException.h" />
     <ClInclude Include="Observer.h" />
     <ClInclude Include="Tests.h" />
+    <ClInclude Include="Validator.h" />
     <ClInclude Include="WarException.h" />
     <QtMoc Include="ClanManager.h" />
     <ClInclude Include="Controller.h" />
@@ -156,11 +160,6 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ClanManager.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="#LR0LGRVR - 2018-07-18 16-00-52.csv" />
-    <None Include="stats.csv" />
-    <None Include="table.csv" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

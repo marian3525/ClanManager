@@ -6,5 +6,6 @@ public:
 	void test();
 private:
 	void testWarAttack();
+	void testConvertPath();
 };
 

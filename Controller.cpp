@@ -1,15 +1,9 @@
 #include "stdafx.h"
 #include "Controller.h"
-#include <fstream>
-#include <algorithm>
 
 Controller::Controller()
-{	
-	//TODO add a menu to select the absolute path in a file browser
-	string fname = "#LR0LGRVR - 2018-07-18 16-00-52.csv";
-	importUpdatedData(fname);
-	computeMetrics();
-	writeCSV();
+{
+
 }
 
 void Controller::loadStats()
@@ -17,7 +11,117 @@ void Controller::loadStats()
 	/*
 		Load stats from a file (war performances & long term behaviour)
 	*/
-	ifstream f("playerStats.stats");
+	ifstream statsInput(statsFilename);
+	char* line = new char[10000];
+	char* ptr;
+	int line_len;
+	int len;
+
+	if (!statsInput.is_open()) {
+		throw ControllerException{ "Could not open file: " + statsFilename };
+	}
+	
+	while (!statsInput.eof()) {
+		statsInput.getline(line, 10000);
+		line_len = strlen(line);
+		len = 0;
+		//read each field and convert it to the proper type
+		//Format: tag, name, th, role, rank, level, league, cups, vscups, warStars, legend, attacks, defenses, donations, requests, ratio, ratio_adj, activity, contribution,
+		//playerLevel, stars1, stars2, percent1, percent2, enemy1, enemy2, attacks, performance, date...
+
+		ptr = strtok(line, ",");
+		const string tag = string(ptr);
+		len += strlen(ptr)+1;
+
+		ptr = strtok(NULL, ",");
+		const string name = string(ptr);
+		len += strlen(ptr)+1;
+
+		ptr = strtok(NULL, ",");
+		const int townHall = atoi(ptr);
+		len += strlen(ptr)+1;
+
+		ptr = strtok(NULL, ",");
+		const string role = string(ptr);
+		len += strlen(ptr)+1;
+
+		ptr = strtok(NULL, ",");
+		const int rank = atoi(ptr);
+		len += strlen(ptr)+1;
+
+		ptr = strtok(NULL, ",");
+		const int experience = atoi(ptr);
+		len += strlen(ptr)+1;
+
+		ptr = strtok(NULL, ",");
+		const string league = string(ptr);
+		len += strlen(ptr)+1;
+
+		ptr = strtok(NULL, ",");
+		const int trophies = atoi(ptr);
+		len += strlen(ptr)+1;
+
+		ptr = strtok(NULL, ",");
+		const int versusTrophies = atoi(ptr);
+		len += strlen(ptr)+1;
+
+		ptr = strtok(NULL, ",");
+		const int warStars = atoi(ptr);
+		len += strlen(ptr)+1;
+
+		ptr = strtok(NULL, ",");
+		const int legendThophies = atoi(ptr);
+		len += strlen(ptr)+1;
+
+		ptr = strtok(NULL, ",");
+		const int attackWins = atoi(ptr);
+		len += strlen(ptr)+1;
+
+		ptr = strtok(NULL, ",");
+		const int defenseWins = atoi(ptr);
+		len += strlen(ptr)+1;
+
+		ptr = strtok(NULL, ",");
+		const int troopsDonated = atoi(ptr);
+		len += strlen(ptr)+1;
+
+		ptr = strtok(NULL, ",");
+		const int troopReceived = atoi(ptr);
+		len += strlen(ptr)+1;
+
+		ptr = strtok(NULL, ",");
+		const float ratio = stof(ptr);
+		len += strlen(ptr)+1;
+
+		ptr = strtok(NULL, ",");
+		const float ratioAdj = stof(ptr);
+		len += strlen(ptr)+1;
+
+		ptr = strtok(NULL, ",");
+		const float activity = stof(ptr);
+		len += strlen(ptr)+1;
+
+		ptr = strtok(NULL, ",");
+		const float contribution = stof(ptr);
+		len += strlen(ptr)+1;
+
+		Player p{ tag, name, townHall, role, rank, experience, league, trophies, versusTrophies, warStars, legendThophies,
+			attackWins, defenseWins, troopsDonated, troopReceived, ratio, ratioAdj, activity, contribution };
+
+		//checking if the player has war attacks
+
+		if (len < line_len) {
+			//"abcd0sawf"
+			// 012345678
+			// _____^___
+			char* warAttacksStart = ptr + strlen(ptr) + 1;
+			p.addWarAttacksFromFile(warAttacksStart);
+		}
+
+		repo.add(p);
+	}
+
+	statsInput.close();
 }
 
 void Controller::storeStats()
@@ -25,13 +129,24 @@ void Controller::storeStats()
 	/*
 		Store stats in a file as persistent storage
 	*/
-	ofstream f("playerStats.stats");
-	/*
-		Store each player's stats
-	*/
+	ofstream stats(statsFilename);
+	string outputString;
+
+	if (!stats.is_open())
+		throw new ControllerException{ "Cannot open file " + statsFilename };
+
 	for (const Player& player : repo.getAll()) {
-		f << player.toString() << endl;
+		outputString += player.toString() + '\n';
 	}
+	//remove the last \n or it will cause problems when reading back from the file and splitting by fields
+	outputString.pop_back();
+	stats << outputString;
+	stats.close();
+}
+
+void Controller::importDataFromCopy()
+{
+	importUpdatedData(freshCopyFilename);
 }
 
 void Controller::removePlayer(string tag)
@@ -40,11 +155,9 @@ void Controller::removePlayer(string tag)
 	notifyObservers();
 }
 
-void Controller::updatePlayer(const Player & player)
+void Controller::updatePlayer(Player & player)
 {
-	Player& p = repo.getByName(player.getName());
-
-	p = player;
+	repo.updatePlayer(player);
 
 	notifyObservers();
 }
@@ -54,27 +167,34 @@ void Controller::importUpdatedData(string path)
 	/*
 		Load fresh data from the .csv dowloaded from clashofstats
 	*/
-	//convert the separators from / to //
-	path.replace(path.begin(), path.end(), '/', '//');
-
-	ifstream f(path);
-	if (!f.is_open())
-		return;
+	string outputString;	// to the copy file
+	ifstream freshFile(path);
 
 	char* line = new char[1300];
 
-	char* char_ptr;				//ptr to the current token in the line
+	char* char_ptr;				//ptr to the current field in the line
+
 	string tag, name, role, league;
 	int townHall, rank, experience, trophies, versusTrophies, warStars, legendThophies, attackWins, defenseWins,
 		troopsDonated, troopReceived;
 
-	//read the first line with the headers, we don't need it
-	f.getline(line, 1298);
+	if (!freshFile.is_open())
+		throw ControllerException("Could not open file " + freshDataFilename);
 
-	while (!f.eof()) {
-		f.getline(line, 1298);
+	//read the first line with the headers, we don't need it
+	freshFile.getline(line, 1298);
+
+	while (!freshFile.eof()) {
+		freshFile.getline(line, 1298);
+
+		//write to the copy:
+		outputString += string(line)+'\n';
+
+		//read each field and convert it to the proper type
 
 		char_ptr = strtok(line, ",");
+		if (char_ptr==NULL)
+			break;
 		tag = string(char_ptr + 1, strlen(char_ptr) - 2);		//strip the first and the last chars which are '"' and not needed
 
 		char_ptr = strtok(NULL, ",");
@@ -134,8 +254,18 @@ void Controller::importUpdatedData(string path)
 		else
 			repo.add(p);
 	}
-	f.close();
 	delete line;
+	freshFile.close();
+
+	//if the function was called as usual, not as backup because the original was not found
+	if (path.find(freshCopyFilename.c_str()) == string::npos) {
+		ofstream copyFile(freshCopyFilename);
+		if (!copyFile.is_open())
+			throw ControllerException("Could not open file " + freshCopyFilename);
+		outputString.pop_back();
+		copyFile << outputString;
+		copyFile.close();
+	}
 }
 
 void Controller::computeMetrics()
@@ -172,27 +302,12 @@ void Controller::addWarAttacks(string playerName, AttackPair warShow)
 	player.addWarShow(warShow);
 }
 
-void Controller::writeCSV()
+int Controller::getPlayerThLevel(string name)
 {
-	/*
-		Debug use only!
-	*/
-	ofstream o("stats.csv");
-	ofstream t("table.csv");
-	if (!o.is_open() || !t.is_open())
-		return;
-
-	//header used to make the table more readable
-	string header = "Tag,Name,TH level,Role,Rank,Level,League,Trophies,versusTrophies,War Stars,Legend Trophies,Attacks Won,Defenses Won,\
-Troops Donated,Troops requested,Ratio,Ratio Adjusted,Activity,Contribution";
-	t << header <<endl;
-
-	for (Player p : repo.getAll()) {
-		o << p.toStringDebug() << endl;
-		t << p.toStringTable() << endl;
-	}
-	o.close();
-	t.close();
+	if (repo.existsByName(name))
+		return repo.getByName(name).getTownHall();
+	else
+		return -1;
 }
 
 int Controller::getSize()
@@ -202,22 +317,47 @@ int Controller::getSize()
 
 void Controller::registerObserver(Observer * observer)
 {
+	/*
+		Register the given observer to the notification list
+		When a change on the repo data occurs, a call to notify() to all observers will be issued
+	*/
 	observers.push_back(observer);
 }
 
 void Controller::onExit()
 {
 	/*
-		Save data in files
+		Save all persistent data
 	*/
-	writeCSV();
-	//save persistent player data
-
+	storeStats();
 }
 
 vector<Player> Controller::getAll()
 {
 	return repo.getAll();
+}
+
+string Controller::getTime(string format)
+{
+	/*
+		Format will consist of letters D, M and Y separated by /
+		to get 21/7/2018 the format will have to be: D/M/Y
+		to get 7/21 the format will have to be: M/D
+	*/
+	string date;
+	time_t currentTime = time(0);
+	tm* localTime = localtime(&currentTime);
+	int day, month, year;
+
+	for (const char tok : format) {
+		switch (tok) {
+		case 'D': day = localTime->tm_mday; date += to_string(day); break;
+		case 'M': month = localTime->tm_mon + 1; date += to_string(month); break;
+		case 'Y': year = localTime->tm_year + 1900; date += to_string(year); break;
+		case '/': date += "/"; break;
+		}
+	}
+	return date;
 }
 
 void Controller::sort(SortMode mode)
@@ -247,7 +387,7 @@ void Controller::sort(SortMode mode)
 		cmp = [](const Player& a, const Player& b) {return a.getAttackWins() > b.getAttackWins(); };
 		break;
 	case defenseWins:
-		cmp = [](const Player& a, const Player& b) {return a.getDefenseWins() < b.getDefenseWins(); };
+		cmp = [](const Player& a, const Player& b) {return a.getDefenseWins() > b.getDefenseWins(); };
 		break;
 	case ratioInc:
 		cmp = [](const Player& a, const Player& b) {return a.getRatio() > b.getRatio(); };
@@ -356,4 +496,20 @@ float Controller::computeCcsUsedPerBattle(Player & p)
 	ccs /= p.getCcSize();
 
 	return ccs;
+}
+
+string Controller::convertPath(const string & path)
+{
+	string _path;
+
+	for (const char c : path) {
+		if (c == '\\') {
+			//convert the separators from '\' to '\\'
+			_path += "\\\\";
+		}
+		else {
+			_path += c;
+		}
+	}
+	return _path;
 }

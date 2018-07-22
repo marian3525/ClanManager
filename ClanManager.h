@@ -8,6 +8,8 @@
 #include "QTableView.h"
 #include "QStandardItemModel.h"
 
+using namespace std;
+
 class ClanManager : public QMainWindow, Observer
 {
 	Q_OBJECT
@@ -66,6 +68,12 @@ private:
 	void addHeaders();
 	void update();
 	void populateRows();
+
+	int getStar1Selected();
+	int getStar2Selected();
+	int getEnemy1Level();
+	int getEnemy2Level();
+
 public slots:
 	void onDonationsSelected();
 	void onRequestsSelected();

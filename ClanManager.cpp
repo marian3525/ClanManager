@@ -9,12 +9,23 @@ ClanManager::ClanManager(Controller* controller, QWidget *parent)
 	int numberOfPlayers = controller->getSize();
 	model = new QStandardItemModel(50, 7, this);
 
-	bindWidgets();
+	try {
+		controller->loadStats();
+	}
+	catch (const ControllerException& e) {
+		//stats file not yet created. It means no data was imported into the app or the stat files were deleted, attempt to load from the copy
+		try {
+			controller->importDataFromCopy();
+		}
+		catch (const ControllerException& e) {
+			//there is no backup fresh file, ask the user to provide a path to the file
+			onLoadFreshData();
+		}
+	}
 
+	bindWidgets();
 	addHeaders();
 	update();
-	populateRows();
-	
 }
 
 void ClanManager::notify()
@@ -22,7 +33,7 @@ void ClanManager::notify()
 	/*
 		Something changed in the controller, request update for the views
 	*/
-	populateRows();
+	update();
 }
 
 void ClanManager::bindWidgets()
@@ -51,7 +62,7 @@ void ClanManager::bindWidgets()
 	first3Star = findChild<QRadioButton*>("first3star");
 
 	firstPercent = findChild<QLineEdit*>("firstPercent");
-	firstEnemy = findChild<QSpinBox*>("firstEnemy");
+	firstEnemy = findChild<QSpinBox*>("enemyFirst");
 
 	noShowSecond = findChild<QCheckBox*>("noShowSecond");
 	second1Star = findChild<QRadioButton*>("second1star");
@@ -59,8 +70,8 @@ void ClanManager::bindWidgets()
 	second3Star = findChild<QRadioButton*>("second3star");
 
 	secondPercent = findChild<QLineEdit*>("secondPercent");
-	secondEnemy = findChild<QSpinBox*>("secondEnemy");
-	addWarAttackButton = findChild<QPushButton*>("addWarAttackButton");
+	secondEnemy = findChild<QSpinBox*>("enemySecond");
+	addWarAttackButton = findChild<QPushButton*>("addWarAttacks");
 
 	memberCounter = findChild<QLCDNumber*>("counter");
 
@@ -106,20 +117,25 @@ void ClanManager::addHeaders()
 	}
 
 	playerList->setModel(model);
-	playerList->setColumnWidth(1, 75);
-	playerList->setColumnWidth(2, 60);
-	playerList->setColumnWidth(3, 55);
-	playerList->setColumnWidth(4, 63);
-	playerList->setColumnWidth(5, 70); 
-	playerList->setColumnWidth(6, 65);
-	playerList->setColumnWidth(7, 55);
-	playerList->setColumnWidth(8, 60);
-	playerList->setColumnWidth(9, 60);
 }
 
 void ClanManager::update()
 {
 	memberCounter->display(controller->getSize());
+	//maintain this order
+	controller->computeMetrics();
+	populateRows();
+
+	playerList->setColumnWidth(1, 75);
+	playerList->setColumnWidth(2, 60);
+	playerList->setColumnWidth(3, 55);
+	playerList->setColumnWidth(4, 63);
+	playerList->setColumnWidth(5, 65);
+	playerList->setColumnWidth(6, 70);
+	playerList->setColumnWidth(7, 70);
+	playerList->setColumnWidth(8, 70);
+	playerList->setColumnWidth(9, 70);
+	playerList->setColumnWidth(10, 85);
 }
 
 void ClanManager::populateRows()
@@ -127,27 +143,90 @@ void ClanManager::populateRows()
 	int index = 0;
 	for (const Player& p : controller->getAll()) {
 		QStandardItem* name = new QStandardItem(QString::fromStdString(p.getName()));
+		name->setSelectable(true);
 		model->setItem(index, 0, name);
 
 		QStandardItem* role = new QStandardItem(QString::fromStdString(p.getRole()));
+		role->setSelectable(false);
 		model->setItem(index, 1, role);
 
 		QStandardItem* trophies = new QStandardItem(QString::fromStdString(to_string(p.getTrophies())));
+		trophies->setSelectable(false);
 		model->setItem(index, 2, trophies);
 
 		QStandardItem* attacks = new QStandardItem(QString::fromStdString(to_string(p.getAttackWins())));
+		attacks->setSelectable(false);
 		model->setItem(index, 3, attacks);
 
 		QStandardItem* defenses = new QStandardItem(QString::fromStdString(to_string(p.getDefenseWins())));
+		defenses->setSelectable(false);
 		model->setItem(index, 4, defenses);
 
 		QStandardItem* donations = new QStandardItem(QString::fromStdString(to_string(p.getTroopsDonated())));
+		donations->setSelectable(false);
 		model->setItem(index, 5, donations);
 
 		QStandardItem* requests = new QStandardItem(QString::fromStdString(to_string(p.getTroopsRequested())));
+		requests->setSelectable(false);
 		model->setItem(index, 6, requests);
+
+		QStandardItem* ratio = new QStandardItem(QString::fromStdString(p.getRatioStr()));
+		ratio->setSelectable(false);
+		model->setItem(index, 7, ratio);
+
+		QStandardItem* ratioAdj = new QStandardItem(QString::fromStdString(p.getRatioAdjustedStr()));
+		ratioAdj->setSelectable(false);
+		model->setItem(index, 8, ratioAdj);
+
+		QStandardItem* activity = new QStandardItem(QString::fromStdString(p.getActivityMetricStr()));
+		activity->setSelectable(false);
+		model->setItem(index, 9, activity);
+
+		QStandardItem* contribution = new QStandardItem(QString::fromStdString(p.getContributionStr()));
+		contribution->setSelectable(false);
+		model->setItem(index, 10, contribution);
+
 		index++;
 	}
+}
+
+int ClanManager::getStar1Selected()
+{
+	if (first1Star->isChecked()) {
+		return 1;
+	}
+	if (first2Star->isChecked()) {
+		return 2;
+	}
+	if (first3Star->isChecked()) {
+		return 3;
+	}
+}
+
+int ClanManager::getStar2Selected()
+{
+	if (second1Star->isChecked()) {
+		return 1;
+	}
+	if (second2Star->isChecked()) {
+		return 2;
+	}
+	if (second3Star->isChecked()) {
+		return 3;
+	}
+}
+
+int ClanManager::getEnemy1Level()
+{
+	int percent = atoi(firstEnemy->text().toStdString().c_str());
+
+	return percent;
+}
+
+int ClanManager::getEnemy2Level()
+{
+	int percent = atoi(secondEnemy->text().toStdString().c_str());
+	return percent;
 }
 
 void ClanManager::onDonationsSelected()
@@ -215,6 +294,40 @@ void ClanManager::onAddWarAttack()
 	/*
 		Add war attack(s) to the selected player
 	*/
+	string date = controller->getTime("D/M/Y");
+
+	//get selected player
+	QModelIndexList indexes;
+	indexes = playerList->selectionModel()->selectedIndexes();
+
+	for (QModelIndex idx : indexes) {
+		string name = playerList->model()->data(idx).toString().toStdString();
+		AttackPair show{ controller->getPlayerThLevel(name), date };
+
+		int stars1, stars2, enemy1, enemy2, percent1, percent2;
+		bool noShow1, noShow2;
+
+		stars1 = getStar1Selected();
+		stars2 = getStar2Selected();
+
+		enemy1 = getEnemy1Level();
+		enemy2 = getEnemy2Level();
+
+		percent1 = atoi(firstPercent->text().toStdString().c_str());
+		percent2 = atoi(secondPercent->text().toStdString().c_str());
+
+		noShow1 = noShowFirst->isChecked();
+		noShow2 = noShowSecond->isChecked();
+
+		//handle the no show situation
+		if (!noShow1) {
+			show.addAttack(stars1, enemy1, percent1);
+		}
+		if (!noShow2) {
+			show.addAttack(stars2, enemy2, percent2);
+		}
+		controller->addWarAttacks(name, show);
+	}
 }
 
 void ClanManager::onAddCGScore()
@@ -283,6 +396,7 @@ void ClanManager::onLoadFreshData()
 {
 	QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Select Fresh Data file"), "", tr("CSV files (*.csv)"));
 	//use only the first path and add double // as file separators
+	//QString str = fileNames[0];
 	string path = fileNames[0].toStdString();
 	controller->importUpdatedData(path);
 }

@@ -8,7 +8,9 @@ Repo::Repo()
 }
 
 void Repo::add(Player& p)
-{
+{	
+
+	p.computeStats();
 	players.push_back(p);
 }
 
@@ -21,8 +23,14 @@ void Repo::remove(string tag)
 
 void Repo::updatePlayer(Player& player)
 {
+	/*
+	update should add the new stats to the vectors in player.history
+	*/
 	Player& p = getByName(player.getName());
-	p = player;
+	p.computeStats();
+	//update also calls computeStats() for the history
+	p.update(player.getAttackWins(), player.getDefenseWins(), player.getTroopsDonated(),
+		player.getTroopsRequested());
 }
 
 Player& Repo::getByName(string name)

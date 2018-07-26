@@ -1,12 +1,11 @@
 #pragma once
-using namespace std;
 class ControllerException
 {
 public:
-	ControllerException(string msg) : errorMsg{ msg } {};
-	string getMessage() const { return errorMsg; }
+	ControllerException(std::string msg) : errorMsg{ msg } {};
+	std::string getMessage() const { return errorMsg; }
 	~ControllerException();
 private:
-	string errorMsg;
+	std::string errorMsg;
 };
 

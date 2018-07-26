@@ -1,23 +1,21 @@
 #pragma once
 #include <vector>
-#include "Player.h"
 #include <algorithm>
-
-using namespace std;
+#include "Player.h"
 class Repo
 {
 public:
 	Repo();
 	void add(Player& p);
-	void remove(string name);
+	void remove(std::string name);
 	void updatePlayer(Player& p);
-	Player& getByName(string name);
-	Player& getById(string id);
+	Player& getByName(std::string name);
+	Player& getById(std::string id);
 	Player& getByIndex(int idx);
-	bool existsByName(string name);
+	bool existsByName(std::string name);
 	int getSize();
-	vector<Player>& getAll();
+	std::vector<Player>& getAll();
 private:
-	vector<Player> players;
+	std::vector<Player> players;
 };
 

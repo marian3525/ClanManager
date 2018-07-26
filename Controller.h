@@ -1,5 +1,4 @@
 #pragma once
-#include "Repo.h"
 #include <algorithm>
 #include <fstream>
 #include <string>
@@ -7,29 +6,32 @@
 #include "Observer.h"
 #include "ControllerException.h"
 #include "AttackPair.h"
-using namespace std;
+#include "Player.h"
+#include "Repo.h"
 
 class Controller
 {
 public:
 	Controller();
 
-	void removePlayer(string name);
+	void removePlayer(std::string name);
 	void updatePlayer(Player& player);
-	void computeMetrics();
-	void addWarAttacks(string playerName, AttackPair warShow);
+	void addWarAttacks(std::string playerName, AttackPair warShow);
+	void addClanGamesScore(std::string playerName, int score);
 
-	void importUpdatedData(string path);
+	void importUpdatedData(std::string path);
 	void loadStats();
 	void storeStats();
-	void importDataFromCopy();
 
-	int getPlayerThLevel(string name);
+	int getPlayerThLevel(std::string name);
 	int getSize();
 	void registerObserver(Observer* observer);
 	void onExit();
-	vector<Player> getAll();
-	string getTime(string format);
+	std::vector<Player> getAll();
+	std::string getTime(std::string format);
+	Player& getPlayer(string name);
+	void updateComments(Player& player, string newText);
+	string getComments(const Player& p);
 
 	enum SortMode {
 		donationInc, donationDec, requestInc, requestDec, xp, townhall, attackWins, defenseWins, ratioInc, ratioDec,
@@ -37,19 +39,18 @@ public:
 	};
 	void sort(SortMode mode);
 
+
 private:
 	Repo repo{};
-	string statsFilename = "playerStats.csv";
-	string freshDataFilename = "D:/Projects/C++/ClanManager/ClanManager/#LR0LGRVR - 2018-07-18 16-00-52.csv";		//debug
-	string freshCopyFilename = "freshCopy.csv";
-	string tableFilename = "table.csv";		//debug
+	std::string statsFilename = "playerStats.";
+	std::string tableFilename = "table.csv";		//debug
 
 	void notifyObservers();
 	float computeActivityMetric(Player& p);
 	float computeRatioAdj(Player& p);
 	float computeContribution(Player& p);
 	float computeCcsUsedPerBattle(Player& p);
-	string convertPath(const string& path);
-	vector<Observer*> observers;
+	std::string convertPath(const std::string& path);
+	std::vector<Observer*> observers;
 };
 

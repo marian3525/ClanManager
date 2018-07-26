@@ -5,24 +5,17 @@ ClanManager::ClanManager(Controller* controller, QWidget *parent)
 	: QMainWindow(parent)
 {
 	ui.setupUi(this);
+
 	this->controller = controller;
 	int numberOfPlayers = controller->getSize();
-	model = new QStandardItemModel(50, 7, this);
 
 	try {
 		controller->loadStats();
 	}
 	catch (const ControllerException& e) {
-		//stats file not yet created. It means no data was imported into the app or the stat files were deleted, attempt to load from the copy
-		try {
-			controller->importDataFromCopy();
-		}
-		catch (const ControllerException& e) {
-			//there is no backup fresh file, ask the user to provide a path to the file
+		//stats file not yet created. It means no data was imported into the app or the stat files were deleted, attempt to load from the fresh data file
 			onLoadFreshData();
-		}
 	}
-
 	bindWidgets();
 	addHeaders();
 	update();
@@ -38,8 +31,11 @@ void ClanManager::notify()
 
 void ClanManager::bindWidgets()
 {
+	model = new QStandardItemModel(50, 7, this);
+
 	playerList = findChild<QTableView*>("playerList");
 	playerList->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
 	donations = findChild<QRadioButton*>("donationsRadio");
 	requests = findChild<QRadioButton*>("requestsRadio");
 	attacks = findChild<QRadioButton*>("attacksRadio");
@@ -79,6 +75,8 @@ void ClanManager::bindWidgets()
 
 	loadFreshData = findChild<QAction*>("actionLoadFreshData");
 
+	connect(playerList, &QTableView::doubleClicked, this, &ClanManager::onDetails);
+
 	connect(donations, &QRadioButton::clicked, this, &ClanManager::onDonationsSelected);
 	connect(requests, &QRadioButton::clicked, this, &ClanManager::onRequestsSelected);
 	connect(attacks, &QRadioButton::clicked, this, &ClanManager::onAttacksSelected);
@@ -104,7 +102,6 @@ void ClanManager::bindWidgets()
 	connect(second3Star, &QRadioButton::clicked, this, &ClanManager::onSecond3Star);
 
 	connect(removePlayerButton, &QPushButton::clicked, this, &ClanManager::onRemove);
-
 	//in the menu:
 	connect(loadFreshData, &QAction::triggered, this, &ClanManager::onLoadFreshData);
 }
@@ -123,7 +120,7 @@ void ClanManager::update()
 {
 	memberCounter->display(controller->getSize());
 	//maintain this order
-	controller->computeMetrics();
+	//controller->computeMetrics();
 	populateRows();
 
 	playerList->setColumnWidth(1, 75);
@@ -333,6 +330,14 @@ void ClanManager::onAddWarAttack()
 void ClanManager::onAddCGScore()
 {
 	int score = atoi(CGScore->text().toStdString().c_str());
+	//get selected player
+	QModelIndexList indexes;
+	indexes = playerList->selectionModel()->selectedIndexes();
+
+	for (QModelIndex idx : indexes) {
+		string name = playerList->model()->data(idx).toString().toStdString();
+		controller->addClanGamesScore(name, score);
+	}
 }
 
 void ClanManager::onFirst1Star()
@@ -387,17 +392,55 @@ void ClanManager::onRemove()
 
 	for (QModelIndex idx : indexes) {
 		QString str = playerList->model()->data(idx).toString();
-		qDebug() << str << endl;
-		//controller->removePlayer();
+		controller->removePlayer(str.toStdString());
 	}
 }
 
 void ClanManager::onLoadFreshData()
-{
-	QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Select Fresh Data file"), "", tr("CSV files (*.csv)"));
-	//use only the first path and add double // as file separators
-	//QString str = fileNames[0];
+{ 
+	QStringList fileNames;
+	do {
+		fileNames = QFileDialog::getOpenFileNames(this, tr("Select Fresh Data file"), "", tr("CSV files (*.csv)"));
+
+		if (fileNames.size() == 0) {
+			QMessageBox msgBox;
+			msgBox.setWindowTitle("No file selected");
+			msgBox.setInformativeText("You must select a stats file. Select Cancel to close the application");
+			msgBox.setStandardButtons(QMessageBox::Retry | QMessageBox::Cancel);
+			msgBox.setDefaultButton(QMessageBox::Retry);
+			msgBox.raise();
+			int code = msgBox.exec();
+
+			//let the user try again or exit the application
+			switch (code) {
+			case QMessageBox::Retry: continue;		
+			case QMessageBox::Cancel: exit(0);
+			}
+		}
+	} while (fileNames.size() == 0);
 	string path = fileNames[0].toStdString();
-	controller->importUpdatedData(path);
+	try {
+		controller->importUpdatedData(path);
+	}
+	catch (const IOException& e) {
+		QMessageBox::warning(this, "Invalid format in file. The application will now exit", QString::fromStdString(e.getMessage()));
+		exit(0);
+	}
+}
+
+void ClanManager::onDetails(const QModelIndex & index)
+{
+	if (index.column() == 0) {
+		QString name = playerList->model()->data(index).toString();
+		Player& player = controller->getPlayer(name.toStdString());
+
+		if (detailWindow != nullptr) {
+			delete detailWindow;
+			detailWindow = nullptr;
+		}
+
+		detailWindow = new DetailWindow{ controller, player };
+		detailWindow->show();
+	}
 }
 	

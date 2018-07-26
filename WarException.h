@@ -1,13 +1,12 @@
 #pragma once
 #include <exception>
-using namespace std;
-class WarException: exception
+class WarException: std::exception
 {
 public:
-	WarException(string errorMsg) :msg{ errorMsg } {};
-	string getMessage() const { return msg; }
+	WarException(std::string errorMsg) :msg{ errorMsg } {};
+	std::string getMessage() const { return msg; }
 	~WarException();
 private:
-	string msg;
+	std::string msg;
 };
 

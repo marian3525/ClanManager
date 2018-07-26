@@ -260,7 +260,7 @@
      <string>Add CG score:</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="CGscore">
+   <widget class="QLineEdit" name="CGScore">
     <property name="geometry">
      <rect>
       <x>340</x>
@@ -319,7 +319,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Add war attack(s):</string>
+     <string>Add war attacks:</string>
     </property>
    </widget>
    <widget class="QRadioButton" name="first1star">
@@ -1432,20 +1432,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Add Attack(s)</string>
-    </property>
-   </widget>
-   <widget class="Line" name="line_5">
-    <property name="geometry">
-     <rect>
-      <x>330</x>
-      <y>800</y>
-      <width>161</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Horizontal</enum>
+     <string>Add Attacks</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="noShowSecond">
@@ -1940,7 +1927,7 @@
    <zorder>line_2</zorder>
    <zorder>line_3</zorder>
    <zorder>label_2</zorder>
-   <zorder>CGscore</zorder>
+   <zorder>CGScore</zorder>
    <zorder>label_3</zorder>
    <zorder>addCGScore</zorder>
    <zorder>line_4</zorder>
@@ -1963,7 +1950,6 @@
    <zorder>noShowFirst</zorder>
    <zorder>counter</zorder>
    <zorder>addWarAttacks</zorder>
-   <zorder>line_5</zorder>
    <zorder>noShowSecond</zorder>
    <zorder>comboBox</zorder>
    <zorder>label_11</zorder>
@@ -1975,7 +1961,7 @@
      <x>0</x>
      <y>0</y>
      <width>1631</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuActions">

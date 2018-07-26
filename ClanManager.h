@@ -1,14 +1,13 @@
 #pragma once
 
 #include <QtWidgets/QMainWindow>
+#include <QListView.h>
+#include <QTableView.h>
+#include <QStandardItemModel.h>
 #include "ui_ClanManager.h"
 #include "Controller.h"
 #include "Observer.h"
-#include "QListView.h"
-#include "QTableView.h"
-#include "QStandardItemModel.h"
-
-using namespace std;
+#include "DetailWindow.h"
 
 class ClanManager : public QMainWindow, Observer
 {
@@ -20,6 +19,7 @@ public:
 
 private:
 	Ui::ClanManagerClass ui;
+	DetailWindow* detailWindow=nullptr;
 	Controller* controller;
 	QTableView* playerList;
 	QStandardItemModel* model;
@@ -104,4 +104,5 @@ public slots:
 	void onRemove();
 
 	void onLoadFreshData();
+	void onDetails(const QModelIndex& index);
 };

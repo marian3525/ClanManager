@@ -1,29 +1,93 @@
 #include "stdafx.h"
 #include "Player.h"
 
-void Player::setActivityMetric(float newMetric)
+Player::Player()
 {
-	this->activity_metric = newMetric;
+
 }
 
-void Player::setRatioAdjusted(float ratio)
+float Player::getAvgWarStars() const
 {
-	this->ratio_adjusted = ratio;
+	float avg=0;
+	int counter = 0;
+	for (const AttackPair& attack: history.getAttacks()) {
+		int first = attack.getStars().first;
+		int second = attack.getStars().second;
+		first != -1 ? avg += first : first=first;
+		second != -1 ? avg += second : second = second;
+		counter += attack.attacksDone;
+	}
+	if (counter != 0) {
+		return avg / counter;
+	}
+	else {
+		return avg;
+	}
 }
 
-void Player::setRatio(float ratio)
+float Player::getAvgWarScore() const
 {
-	this->ratio = ratio;
+	float avg = 0;
+	int counter = 0;
+	for (AttackPair& attack : history.getAttacks()) {
+		int perf = attack.getPerformance();
+		perf != -1 ? avg += perf : perf = perf;
+		counter++;
+	}
+	if (counter != 0) {
+		return avg / counter;
+	}
+	else {
+		return avg;
+	}
 }
 
-void Player::setContribution(float contribution)
+float Player::getAvgCgScore() const
 {
-	this->contribution = contribution;
+	float avg = 0;
+	int counter = 0;
+	for (const int score : history.getGamesScore()) {
+		avg += score;
+		counter++;
+	}
+	if (counter != 0) {
+		return avg / counter;
+	}
+	else {
+		return avg;
+	}
 }
 
-void Player::setGamesScore(int score)
+int Player::getCcSize()
 {
-	this->gamesScore = score;
+	switch (getTownHall()) {
+	case 1:
+		cc_size = 0; break;
+	case 2:
+		cc_size = 0; break;
+	case 3:
+		cc_size = 10; break;
+	case 4:
+		cc_size = 15; break;
+	case 5:
+		cc_size = 15; break;
+	case 6:
+		cc_size = 20; break;
+	case 7:
+		cc_size = 20; break;
+	case 8:
+		cc_size = 25; break;
+	case 9:
+		cc_size = 30; break;
+	case 10:
+		cc_size = 35; break;
+	case 11:
+		cc_size = 35; break;
+	case 12:
+		cc_size = 40; break;
+	}
+	history.setCcSize(cc_size);
+	return cc_size;
 }
 
 string Player::toString() const
@@ -32,78 +96,63 @@ string Player::toString() const
 		Format: tag,name,th,role,rank,level,league,cups,vscups,warStars,legend,attacks,defenses,donations,requests,ratio,ratio_adj,activity,contribution,
 		playerLevel,stars1,stars2,percent1,percent2,enemy1,enemy2,attacks,performance,date...
 	*/
-	string str="";
+	string str;
+
+	str.append("[general]");
+	str.append(",");
 
 	str += tag;
-	str += ",";
+	str.append(",");
 	str += name;
-	str += ",";
+	str.append(",");
 	str += to_string(townHall);
-	str += ",";
+	str.append(",");
 	str += role;
-	str += ",";
+	str.append(",");
+	str.append(specialRole);
+	str.append(",");
+	str.append(to_string(comments.size()));
+	str.append("&");
+	str.append(comments);
+	str.append("&");
 	str += to_string(rank);
-	str += ",";
+	str.append(",");
 	str += to_string(experience);
-	str += ",";
+	str.append(",");
 	str += league;
-	str += ",";
+	str.append(",");
 	str += to_string(trophies);
-	str += ",";
+	str.append(",");
 	str += to_string(versusTrophies);
-	str += ",";
+	str.append(",");
 	str += to_string(warStars);
-	str += ",";
+	str.append(",");
 	str += to_string(legendTrophies);
-	str += ","; 
-	str += to_string(attackWins);
-	str += ",";
-	str += to_string(defenseWins);
-	str += ",";
-	str += to_string(troopsDonated);
-	str += ",";
-	str += to_string(troopsRequested);
-	str += ",";
-	str += to_string(ratio);
-	str += ",";
-	str += to_string(ratio_adjusted);
-	str += ",";
-	str += to_string(activity_metric);
-	str += ",";
-	str+=to_string(contribution);
+	str.append(",");
+	str += to_string(history.getLastAttacks());
+	str.append(",");
+	str += to_string(history.getLastDefenses());
+	str.append(",");
+	str += to_string(history.getLastDonations());
+	str.append(",");
+	str += to_string(history.getLastRequests());
+	str.append(",");
+	str += to_string(history.getLastRatio());
+	str.append(",");
+	str += to_string(history.getLastAdjustedRatio());
+	str.append(",");
+	str += to_string(history.getLastActivity());
+	str.append(",");
+	str += to_string(history.getLastContribution());
+	str.append(",");
+	str.append("[/general],");
 
-	//add the war stats
-	for (const AttackPair& attack : warAttacks) {
-		str += ",";
-		str += attack.toString();
-	}
+	//add the stats
+	string historyString = history.toString();
+	str.append(historyString);
+
 	return str;
 }
-
-string Player::toStringDebug()
-{
-	string str="";
-	str += "Tag: " + tag + ", Name: " + name + ", TH Level: " + to_string(townHall) + ", Role: " + role + ", Rank: " + to_string(rank) +
-		", Level: " + to_string(experience) + ", League: " + league + ", Trophies: " + to_string(trophies) + ", Versus Trophies: " + to_string(versusTrophies) +
-		", War Stars: " + to_string(warStars) + ", Legend Trophies: " + to_string(legendTrophies) + ", Attacks Won: " +
-		to_string(attackWins) + ", Defenses Won: " + to_string(defenseWins) + ", Troops Donated: " + to_string(troopsDonated) +
-		", Troops Requested: " + to_string(troopsRequested) + ", Ratio: " + to_string(ratio) + ", Adjusted Ratio: " + to_string(ratio_adjusted) + 
-		", Activity Metric: " + to_string(activity_metric) + ", Contribution: " + to_string(contribution);
-	return str;
-}
-
-string Player::toStringTable()
-{
-	string str;
-	str += tag + "," + name + "," + to_string(townHall) + "," + role + "," + to_string(rank) +
-		"," + to_string(experience) + "," + league + "," + to_string(trophies) + "," + to_string(versusTrophies) +
-		"," + to_string(warStars) + "," + to_string(legendTrophies) + "," +
-		to_string(attackWins) + "," + to_string(defenseWins) + "," + to_string(troopsDonated) +
-		"," + to_string(troopsRequested) + "," + to_string(ratio) + "," + to_string(ratio_adjusted) +
-		"," + to_string(activity_metric) + "," + to_string(contribution);
-	return str;
-}
-
 void Player::addWarAttacksFromFile(char* line)
 {
 	/*
@@ -154,11 +203,222 @@ void Player::addWarAttacksFromFile(char* line)
 		AttackPair warShow{ playerThLevel, starsFirst, starsSecond, percentFirst, percentSecond, enemyFirst, enemySecond, 
 			attacksDone, performance, date };
 
-		this->warAttacks.push_back(warShow);
+		//this->warAttacks.push_back(warShow);
 	}
 }
 
 void Player::addWarShow(const AttackPair & warShow)
 {
-	warAttacks.push_back(warShow);
+	history.addWarShow(warShow);
+}
+
+void Player::addClanGamesScore(const int score)
+{
+	history.addGamesScore(score);
+}
+
+void Player::setNotes(string text)
+{
+	this->comments = text;
+}
+
+void Player::loadFromFile(char * line)
+{
+	/*
+		Read a player from a .stats file, including war attacks
+	*/
+	char* ptr;
+	char* lineCopy = strdup(line);
+	int line_len = strlen(line);
+	int len = 0;
+	/*
+		to extract another variable from the file use:
+		ptr = strtok(NULL, ",");
+		//convert ptr to whatever it is needed
+
+		MAKE SURE THAT THE FORMAT WRITTEN INTO THE FILE IS THE SAME AS THE FORMAT USED TO READ THE FILE: toString and loadFromFile must
+		store/load in the same order
+	*/
+
+	//read each field and convert to the proper type
+
+	ptr = strtok(line, ",");	
+	if (strcmp(ptr, "[general]") != 0)
+		throw IOException{ "IOException: Invalid line \"" + string(line) + "\". Expected: \"[general]\"" };
+
+	ptr = strtok(NULL, ",");
+	const string tag = string(ptr);
+	len += strlen(ptr) + 1;
+
+	ptr = strtok(NULL, ",");
+	const string name = string(ptr);
+	len += strlen(ptr) + 1;
+
+	ptr = strtok(NULL, ",");
+	const int townHall = atoi(ptr);
+	len += strlen(ptr) + 1;
+
+	ptr = strtok(NULL, ",");
+	const string role = string(ptr);
+	len += strlen(ptr) + 1;
+
+	ptr = strtok(NULL, ",");
+	const string specialRole = string(ptr);
+	len += strlen(ptr) + 1;
+
+	ptr = strtok(NULL, "&");
+	int commentsLen;
+	commentsLen = stoi(ptr);
+	char* comments_ptr = new char[commentsLen+1];
+	ptr = strtok(NULL, "&");
+	strncpy(comments_ptr, ptr, commentsLen);
+	comments_ptr[commentsLen] = 0;
+	const string comments = string(comments_ptr);
+	delete[] comments_ptr;
+	ptr += commentsLen;
+	
+	ptr = strtok(NULL, ",");
+	const int rank = atoi(ptr);
+	len += strlen(ptr) + 1;
+
+	ptr = strtok(NULL, ",");
+	const int experience = atoi(ptr);
+	len += strlen(ptr) + 1;
+
+	ptr = strtok(NULL, ",");
+	const string league = string(ptr);
+	len += strlen(ptr) + 1;
+
+	ptr = strtok(NULL, ",");
+	const int trophies = atoi(ptr);
+	len += strlen(ptr) + 1;
+
+	ptr = strtok(NULL, ",");
+	const int versusTrophies = atoi(ptr);
+	len += strlen(ptr) + 1;
+
+	ptr = strtok(NULL, ",");
+	const int warStars = atoi(ptr);
+	len += strlen(ptr) + 1;
+
+	ptr = strtok(NULL, ",");
+	const int legendThophies = atoi(ptr);
+	len += strlen(ptr) + 1;
+
+	this->tag = tag;
+	this->name = name;
+	this->townHall = townHall;
+	this->role = role;
+	this->specialRole = specialRole;
+	this->rank = rank;
+	this->experience = experience;
+	this->league = league;
+	this->trophies = trophies;
+	this->versusTrophies = versusTrophies;
+	this->warStars = warStars;
+	this->legendTrophies = legendThophies;
+	this->comments = comments;
+
+	history.setCcSize(getCcSize());		//set the cc size for the player and its history
+
+	history.readHistoryFromStatsLine(lineCopy);
+	free(lineCopy);
+}
+
+void Player::loadFromFreshFile(char* line)
+{
+	/*
+		Read a player from a .csv file, downloaded from clashofstats.com
+	*/
+	char* char_ptr;
+	string tag, name, role, league;
+	int townHall, rank, experience, trophies, versusTrophies, warStars, legendThophies, attackWins, defenseWins,
+		troopsDonated, troopReceived;
+
+	char_ptr = strtok(line, ",");
+	if (char_ptr == NULL)
+		return;
+	tag = string(char_ptr + 1, strlen(char_ptr) - 2);		//strip the first and the last chars which are '"' and not needed
+
+	char_ptr = strtok(NULL, ",");
+	name = string(char_ptr + 1, strlen(char_ptr) - 2);
+
+	char_ptr = strtok(NULL, ",");
+	townHall = atoi(char_ptr);
+
+	char_ptr = strtok(NULL, ",");
+	role = string(char_ptr + 1, strlen(char_ptr) - 2);
+
+	char_ptr = strtok(NULL, ",");
+	rank = atoi(char_ptr);
+
+	char_ptr = strtok(NULL, ",");
+	experience = atoi(char_ptr);
+
+	char_ptr = strtok(NULL, ",");
+	league = string(char_ptr + 1, strlen(char_ptr) - 2);
+
+	char_ptr = strtok(NULL, ",");
+	trophies = atoi(char_ptr);
+
+	char_ptr = strtok(NULL, ",");
+	versusTrophies = atoi(char_ptr);
+
+	char_ptr = strtok(NULL, ",");
+	warStars = atoi(char_ptr);
+
+	//0 legend trophies do not exist in the file. No trophies is marked by nothing, so prev_attr,,next_attr
+	//if after the prev token there is a , then there are 0 legend trophies. Else, parse as usual
+	if (*(char_ptr + strlen(char_ptr) + 1) == ',') {
+		legendThophies = 0;
+	}
+	else {
+		char_ptr = strtok(NULL, ",");
+		legendThophies = atoi(char_ptr);
+	}
+
+	char_ptr = strtok(NULL, ",");
+	attackWins = atoi(char_ptr);
+
+	char_ptr = strtok(NULL, ",");
+	defenseWins = atoi(char_ptr);
+
+	char_ptr = strtok(NULL, ",");
+	troopsDonated = atoi(char_ptr);
+
+	char_ptr = strtok(NULL, ",");
+	troopReceived = atoi(char_ptr);
+
+	this->tag = tag;
+	this->name = name;
+	this->townHall = townHall;
+	this->role = role;
+	this->rank = rank;
+	this->experience = experience;
+	this->league = league;
+	this->trophies = trophies;
+	this->versusTrophies = versusTrophies;
+	this->warStars = warStars;
+	this->legendTrophies = legendThophies;
+
+	history.addAttacks(attackWins);
+	history.addDefenses(defenseWins);
+	history.addDonations(troopsDonated);
+	history.addRequests(troopReceived);
+
+	getCcSize();
+}
+
+void Player::update(const int newAttacks, const int newDefenses, const int newDonations, const int newRequests)
+{
+	history.addAttacks(newAttacks);
+	history.addDefenses(newDefenses);
+	history.addDonations(newDonations);
+	history.addRequests(newRequests);
+	history.computeStats();
+}
+
+void Player::computeStats()
+{
+	history.computeStats();
 }

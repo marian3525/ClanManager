@@ -4,6 +4,7 @@ using namespace std;
 class AttackPair
 {
 public:
+	AttackPair();
 	AttackPair(int playerThLevel, string date) : playerThLevel{ playerThLevel }, date{ date } {};
 	AttackPair(int playerLevel, int star1, int star2, int percent1, int percent2, int enemy1, int enemy2, int attacks, int perf, string date) :
 		playerThLevel{ playerLevel }, starsFirst{ star1 }, starsSecond{ star2 }, percentFirst{ percent1 }, percentSecond{ percent2 },
@@ -14,13 +15,13 @@ public:
 	pair<int, int> getEnemy() const { pair<int, int> a(enemyFirst, enemySecond); return a; }
 	int getPerformance();
 	string toString() const;
+	int attacksDone = 0;		//not -1 or the attacks won't be counter correctly
 
 private:
-	int playerThLevel;
+	int playerThLevel=-1;
 	int starsFirst=-1, starsSecond=-1;
 	int percentFirst=-1, percentSecond=-1;
 	int enemyFirst=-1, enemySecond=-1;
-	int attacksDone=0;
 	int performance=-1;
 	string date="none";
 };

@@ -1,6 +1,10 @@
 #include "stdafx.h"
 #include "AttackPair.h"
 
+AttackPair::AttackPair()
+{
+}
+
 void AttackPair::addAttack(int stars, int enemyLevel, int percent)
 {
 	switch (attacksDone) {
@@ -415,32 +419,32 @@ int AttackPair::getPerformance()
 	return score;
 }
 
-
-string AttackPair::toString() const
+std::string AttackPair::toString() const
 {
 	/*
 		to .csv format, without the terminating ,
 	*/
-	string str = "";
-	str += to_string(playerThLevel);
-	str += ",";
-	str += to_string(starsFirst);
-	str += ",";
-	str += to_string(starsSecond);
-	str += ",";
-	str += to_string(percentFirst);
-	str += ",";
-	str += to_string(percentSecond);
-	str += ",";
-	str += to_string(enemyFirst);
-	str += ",";
-	str += to_string(enemySecond);
-	str += ",";
-	str += to_string(attacksDone);
-	str += ",";
-	str += to_string(performance);
-	str += ",";
-	str += date;
+	std::string str;
+
+	str.append(to_string(playerThLevel));
+	str.append(",");
+	str.append(to_string(starsFirst));
+	str.append(",");
+	str.append(to_string(starsSecond));
+	str.append(",");
+	str.append(to_string(percentFirst));
+	str.append(",");
+	str.append(to_string(percentSecond));
+	str.append(",");
+	str.append(to_string(enemyFirst));
+	str.append(",");
+	str.append(to_string(enemySecond));
+	str.append(",");
+	str.append(to_string(attacksDone));
+	str.append(",");
+	str.append(to_string(performance));
+	str.append(",");
+	str.append(date);
 
 	return str;
 }

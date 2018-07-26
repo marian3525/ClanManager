@@ -23,102 +23,11 @@ void Controller::loadStats()
 	
 	while (!statsInput.eof()) {
 		statsInput.getline(line, 10000);
-		line_len = strlen(line);
-		len = 0;
-		//read each field and convert it to the proper type
-		//Format: tag, name, th, role, rank, level, league, cups, vscups, warStars, legend, attacks, defenses, donations, requests, ratio, ratio_adj, activity, contribution,
-		//playerLevel, stars1, stars2, percent1, percent2, enemy1, enemy2, attacks, performance, date...
+		
+		Player player{};
+		player.loadFromFile(line);
 
-		ptr = strtok(line, ",");
-		const string tag = string(ptr);
-		len += strlen(ptr)+1;
-
-		ptr = strtok(NULL, ",");
-		const string name = string(ptr);
-		len += strlen(ptr)+1;
-
-		ptr = strtok(NULL, ",");
-		const int townHall = atoi(ptr);
-		len += strlen(ptr)+1;
-
-		ptr = strtok(NULL, ",");
-		const string role = string(ptr);
-		len += strlen(ptr)+1;
-
-		ptr = strtok(NULL, ",");
-		const int rank = atoi(ptr);
-		len += strlen(ptr)+1;
-
-		ptr = strtok(NULL, ",");
-		const int experience = atoi(ptr);
-		len += strlen(ptr)+1;
-
-		ptr = strtok(NULL, ",");
-		const string league = string(ptr);
-		len += strlen(ptr)+1;
-
-		ptr = strtok(NULL, ",");
-		const int trophies = atoi(ptr);
-		len += strlen(ptr)+1;
-
-		ptr = strtok(NULL, ",");
-		const int versusTrophies = atoi(ptr);
-		len += strlen(ptr)+1;
-
-		ptr = strtok(NULL, ",");
-		const int warStars = atoi(ptr);
-		len += strlen(ptr)+1;
-
-		ptr = strtok(NULL, ",");
-		const int legendThophies = atoi(ptr);
-		len += strlen(ptr)+1;
-
-		ptr = strtok(NULL, ",");
-		const int attackWins = atoi(ptr);
-		len += strlen(ptr)+1;
-
-		ptr = strtok(NULL, ",");
-		const int defenseWins = atoi(ptr);
-		len += strlen(ptr)+1;
-
-		ptr = strtok(NULL, ",");
-		const int troopsDonated = atoi(ptr);
-		len += strlen(ptr)+1;
-
-		ptr = strtok(NULL, ",");
-		const int troopReceived = atoi(ptr);
-		len += strlen(ptr)+1;
-
-		ptr = strtok(NULL, ",");
-		const float ratio = stof(ptr);
-		len += strlen(ptr)+1;
-
-		ptr = strtok(NULL, ",");
-		const float ratioAdj = stof(ptr);
-		len += strlen(ptr)+1;
-
-		ptr = strtok(NULL, ",");
-		const float activity = stof(ptr);
-		len += strlen(ptr)+1;
-
-		ptr = strtok(NULL, ",");
-		const float contribution = stof(ptr);
-		len += strlen(ptr)+1;
-
-		Player p{ tag, name, townHall, role, rank, experience, league, trophies, versusTrophies, warStars, legendThophies,
-			attackWins, defenseWins, troopsDonated, troopReceived, ratio, ratioAdj, activity, contribution };
-
-		//checking if the player has war attacks
-
-		if (len < line_len) {
-			//"abcd0sawf"
-			// 012345678
-			// _____^___
-			char* warAttacksStart = ptr + strlen(ptr) + 1;
-			p.addWarAttacksFromFile(warAttacksStart);
-		}
-
-		repo.add(p);
+		repo.add(player);
 	}
 
 	statsInput.close();
@@ -136,17 +45,12 @@ void Controller::storeStats()
 		throw new ControllerException{ "Cannot open file " + statsFilename };
 
 	for (const Player& player : repo.getAll()) {
-		outputString += player.toString() + '\n';
+		outputString.append(player.toString() + '\n');
 	}
 	//remove the last \n or it will cause problems when reading back from the file and splitting by fields
 	outputString.pop_back();
 	stats << outputString;
 	stats.close();
-}
-
-void Controller::importDataFromCopy()
-{
-	importUpdatedData(freshCopyFilename);
 }
 
 void Controller::removePlayer(string tag)
@@ -157,149 +61,58 @@ void Controller::removePlayer(string tag)
 
 void Controller::updatePlayer(Player & player)
 {
+	/*
+		Add the new attacks, defenses, donations and requests to the history vectors
+	*/
 	repo.updatePlayer(player);
 
 	notifyObservers();
 }
 
-void Controller::importUpdatedData(string path)
+void Controller::importUpdatedData(std::string path)
 {
 	/*
 		Load fresh data from the .csv dowloaded from clashofstats
 	*/
-	string outputString;	// to the copy file
 	ifstream freshFile(path);
 
 	char* line = new char[1300];
-
 	char* char_ptr;				//ptr to the current field in the line
 
-	string tag, name, role, league;
-	int townHall, rank, experience, trophies, versusTrophies, warStars, legendThophies, attackWins, defenseWins,
-		troopsDonated, troopReceived;
-
 	if (!freshFile.is_open())
-		throw ControllerException("Could not open file " + freshDataFilename);
+		throw ControllerException{ "Could not open file " + path };
 
 	//read the first line with the headers, we don't need it
 	freshFile.getline(line, 1298);
 
 	while (!freshFile.eof()) {
-		freshFile.getline(line, 1298);
+		freshFile.getline(line, 1290);
 
-		//write to the copy:
-		outputString += string(line)+'\n';
-
-		//read each field and convert it to the proper type
-
-		char_ptr = strtok(line, ",");
-		if (char_ptr==NULL)
+		if (strcmp(line, "")==0)
+			//last line
 			break;
-		tag = string(char_ptr + 1, strlen(char_ptr) - 2);		//strip the first and the last chars which are '"' and not needed
 
-		char_ptr = strtok(NULL, ",");
-		name = string(char_ptr + 1, strlen(char_ptr) - 2);
+		Player player{};
+		player.loadFromFreshFile(line);
 
-		char_ptr = strtok(NULL, ",");
-		townHall = atoi(char_ptr);
-
-		char_ptr = strtok(NULL, ",");
-		role = string(char_ptr + 1, strlen(char_ptr) - 2);
-
-		char_ptr = strtok(NULL, ",");
-		rank = atoi(char_ptr);
-
-		char_ptr = strtok(NULL, ",");
-		experience = atoi(char_ptr);
-
-		char_ptr = strtok(NULL, ",");
-		league = string(char_ptr + 1, strlen(char_ptr) - 2);
-
-		char_ptr = strtok(NULL, ",");
-		trophies = atoi(char_ptr);
-
-		char_ptr = strtok(NULL, ",");
-		versusTrophies = atoi(char_ptr);
-
-		char_ptr = strtok(NULL, ",");
-		warStars = atoi(char_ptr);
-
-		//0 legend trophies do not exist in the file. No trophies is marked by nothing, so prev_attr,,next_attr
-		//if after the prev token there is a , then there are 0 legend trophies. Else, parse as usual
-		if (*(char_ptr + strlen(char_ptr) + 1) == ',') {
-			legendThophies = 0;
-		}
-		else {
-			char_ptr = strtok(NULL, ",");
-			legendThophies = atoi(char_ptr);
-		}
-
-		char_ptr = strtok(NULL, ",");
-		attackWins = atoi(char_ptr);
-
-		char_ptr = strtok(NULL, ",");
-		defenseWins = atoi(char_ptr);
-
-		char_ptr = strtok(NULL, ",");
-		troopsDonated = atoi(char_ptr);
-
-		char_ptr = strtok(NULL, ",");
-		troopReceived = atoi(char_ptr);
-
-		Player p{ tag, name, townHall, role, rank, experience, league, trophies, versusTrophies, warStars, legendThophies,
-			attackWins, defenseWins, troopsDonated, troopReceived };
-
-		if (repo.existsByName(name))
-			updatePlayer(p);
+		if (repo.existsByName(player.getName()))
+			//if it already exists, load the new stats into the history vectors
+			updatePlayer(player);
 		else
-			repo.add(p);
+			repo.add(player);
 	}
 	delete line;
 	freshFile.close();
-
-	//if the function was called as usual, not as backup because the original was not found
-	if (path.find(freshCopyFilename.c_str()) == string::npos) {
-		ofstream copyFile(freshCopyFilename);
-		if (!copyFile.is_open())
-			throw ControllerException("Could not open file " + freshCopyFilename);
-		outputString.pop_back();
-		copyFile << outputString;
-		copyFile.close();
-	}
-}
-
-void Controller::computeMetrics()
-{
-	float ratio;
-	float ratio_adjusted;
-	float activity_metric;
-	float contribution;
-
-	
-	for (Player& p : repo.getAll()) {
-		//the common ratio
-		if (p.getTroopsRequested() != 0) {
-			ratio = (float) p.getTroopsDonated() / p.getTroopsRequested();
-		}
-		else {
-			ratio = p.getTroopsDonated();
-		}
-		p.setRatio(ratio);
-		
-		//adjusted ratio
-		float ratioAdj = computeRatioAdj(p);
-		p.setRatioAdjusted(ratioAdj);
-
-		//activity masurement
-		float activityMetric = computeActivityMetric(p);
-		p.setActivityMetric(activityMetric);
-	}
 }
 
 void Controller::addWarAttacks(string playerName, AttackPair warShow)
 {
-	Player& player = repo.getByName(playerName);
-	player.addWarShow(warShow);
+	repo.getByName(playerName).addWarShow(warShow);
+}
+
+void Controller::addClanGamesScore(std::string playerName, int score)
+{
+	repo.getByName(playerName).addClanGamesScore(score);
 }
 
 int Controller::getPlayerThLevel(string name)
@@ -360,6 +173,30 @@ string Controller::getTime(string format)
 	return date;
 }
 
+Player& Controller::getPlayer(string name)
+{
+	return repo.getByName(name);
+}
+
+void Controller::updateComments(Player & player, string newText)
+{
+	/*
+		remove the '\n' from the text and replace with &&
+		set the new description of the player
+	*/
+	replace(newText.begin(), newText.end(), '\n', '$');
+	repo.getByName(player.getName()).setNotes(newText);
+}
+
+string Controller::getComments(const Player & p)
+{
+	//get the notes and replace the $ with endlines
+	string notes = repo.getByName(p.getName()).getNotes();
+	replace(notes.begin(), notes.end(), '$', '\n');
+
+	return notes;
+}
+
 void Controller::sort(SortMode mode)
 {
 	std::function<bool(const Player& a, const Player& b)> cmp;
@@ -390,10 +227,10 @@ void Controller::sort(SortMode mode)
 		cmp = [](const Player& a, const Player& b) {return a.getDefenseWins() > b.getDefenseWins(); };
 		break;
 	case ratioInc:
-		cmp = [](const Player& a, const Player& b) {return a.getRatio() > b.getRatio(); };
+		cmp = [](const Player& a, const Player& b) {return a.getRatio() < b.getRatio(); };
 		break;
 	case ratioDec:
-		cmp = [](const Player& a, const Player& b) {return a.getRatio() < b.getRatio(); };
+		cmp = [](const Player& a, const Player& b) {return a.getRatio() > b.getRatio(); };
 		break;
 	case warStars:
 		cmp = [](const Player& a, const Player& b) {return a.getWarStars() > b.getWarStars(); };
@@ -420,6 +257,7 @@ void Controller::sort(SortMode mode)
 	std::sort(repo.getAll().begin(), repo.getAll().end(), cmp);
 	notifyObservers();
 }
+
 
 void Controller::notifyObservers()
 {

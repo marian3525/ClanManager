@@ -58,7 +58,7 @@ public:
     QFrame *line_2;
     QFrame *line_3;
     QLabel *label_2;
-    QLineEdit *CGscore;
+    QLineEdit *CGScore;
     QLabel *label_3;
     QPushButton *addCGScore;
     QFrame *line_4;
@@ -82,7 +82,6 @@ public:
     QCheckBox *noShowFirst;
     QLCDNumber *counter;
     QPushButton *addWarAttacks;
-    QFrame *line_5;
     QCheckBox *noShowSecond;
     QComboBox *comboBox;
     QLabel *label_11;
@@ -179,9 +178,9 @@ public:
         label_2 = new QLabel(centralWidget);
         label_2->setObjectName(QStringLiteral("label_2"));
         label_2->setGeometry(QRect(340, 410, 151, 16));
-        CGscore = new QLineEdit(centralWidget);
-        CGscore->setObjectName(QStringLiteral("CGscore"));
-        CGscore->setGeometry(QRect(340, 440, 101, 22));
+        CGScore = new QLineEdit(centralWidget);
+        CGScore->setObjectName(QStringLiteral("CGScore"));
+        CGScore->setGeometry(QRect(340, 440, 101, 22));
         label_3 = new QLabel(centralWidget);
         label_3->setObjectName(QStringLiteral("label_3"));
         label_3->setGeometry(QRect(450, 440, 55, 16));
@@ -404,11 +403,6 @@ public:
         addWarAttacks = new QPushButton(centralWidget);
         addWarAttacks->setObjectName(QStringLiteral("addWarAttacks"));
         addWarAttacks->setGeometry(QRect(340, 780, 141, 27));
-        line_5 = new QFrame(centralWidget);
-        line_5->setObjectName(QStringLiteral("line_5"));
-        line_5->setGeometry(QRect(330, 800, 161, 20));
-        line_5->setFrameShape(QFrame::HLine);
-        line_5->setFrameShadow(QFrame::Sunken);
         noShowSecond = new QCheckBox(centralWidget);
         noShowSecond->setObjectName(QStringLiteral("noShowSecond"));
         noShowSecond->setGeometry(QRect(340, 660, 91, 20));
@@ -489,7 +483,7 @@ public:
         line_2->raise();
         line_3->raise();
         label_2->raise();
-        CGscore->raise();
+        CGScore->raise();
         label_3->raise();
         addCGScore->raise();
         line_4->raise();
@@ -512,14 +506,13 @@ public:
         noShowFirst->raise();
         counter->raise();
         addWarAttacks->raise();
-        line_5->raise();
         noShowSecond->raise();
         comboBox->raise();
         label_11->raise();
         removePlayer->raise();
         menuBar = new QMenuBar(ClanManagerClass);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 1631, 21));
+        menuBar->setGeometry(QRect(0, 0, 1631, 25));
         menuActions = new QMenu(menuBar);
         menuActions->setObjectName(QStringLiteral("menuActions"));
         menuOptions = new QMenu(menuBar);
@@ -564,7 +557,7 @@ public:
         label_2->setText(QApplication::translate("ClanManagerClass", "Add CG score:", nullptr));
         label_3->setText(QApplication::translate("ClanManagerClass", "XP", nullptr));
         addCGScore->setText(QApplication::translate("ClanManagerClass", "Add", nullptr));
-        label_4->setText(QApplication::translate("ClanManagerClass", "Add war attack(s):", nullptr));
+        label_4->setText(QApplication::translate("ClanManagerClass", "Add war attacks:", nullptr));
         first1star->setText(QApplication::translate("ClanManagerClass", "1*", nullptr));
         first2star->setText(QApplication::translate("ClanManagerClass", "2*", nullptr));
         first3star->setText(QApplication::translate("ClanManagerClass", "3*", nullptr));
@@ -578,7 +571,7 @@ public:
         label_9->setText(QApplication::translate("ClanManagerClass", "%", nullptr));
         label_10->setText(QApplication::translate("ClanManagerClass", "Result:", nullptr));
         noShowFirst->setText(QApplication::translate("ClanManagerClass", "No show", nullptr));
-        addWarAttacks->setText(QApplication::translate("ClanManagerClass", "Add Attack(s)", nullptr));
+        addWarAttacks->setText(QApplication::translate("ClanManagerClass", "Add Attacks", nullptr));
         noShowSecond->setText(QApplication::translate("ClanManagerClass", "No show", nullptr));
         label_11->setText(QApplication::translate("ClanManagerClass", "View:", nullptr));
         removePlayer->setText(QApplication::translate("ClanManagerClass", "Remove Player", nullptr));

@@ -353,19 +353,6 @@
     <string>TextLabel</string>
    </property>
   </widget>
-  <widget class="QLabel" name="specialRoleLabel">
-   <property name="geometry">
-    <rect>
-     <x>350</x>
-     <y>240</y>
-     <width>181</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>TextLabel</string>
-   </property>
-  </widget>
   <widget class="QTextEdit" name="notes">
    <property name="geometry">
     <rect>
@@ -373,6 +360,16 @@
      <y>320</y>
      <width>251</width>
      <height>81</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="specialRoleInput">
+   <property name="geometry">
+    <rect>
+     <x>350</x>
+     <y>240</y>
+     <width>171</width>
+     <height>22</height>
     </rect>
    </property>
   </widget>

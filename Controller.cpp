@@ -6,6 +6,50 @@ Controller::Controller()
 
 }
 
+void Controller::importUpdatedData(std::string path)
+{
+	/*
+	Load fresh data from the .csv dowloaded from clashofstats and increase the cycle counter
+	*/
+	ifstream freshFile(path);
+
+	char* line = new char[1300];
+	char* char_ptr;				//ptr to the current field in the line
+
+	if (!freshFile.is_open())
+		throw ControllerException{ "Could not open file " + path };
+
+	//read the first line with the headers, we don't need it
+	freshFile.getline(line, 1298);
+	cycle++;
+	while (!freshFile.eof()) {
+		freshFile.getline(line, 1290);
+
+		if (strcmp(line, "") == 0)
+			//last line
+			break;
+
+		Player player{};
+		//read from file and compute the stats
+		player.loadFromFreshFile(line);
+
+		if (repo.existsByName(player.getName())) {
+			//if it already exists, load the new stats into the history vectors
+			updatePlayer(player);
+		}
+		else {
+			player.computeStats();
+			repo.add(player);
+		}
+	}
+	delete line;
+	//update the player/s current cycle
+	for (Player& p : repo.getAll()) {
+		p.setCycle(cycle);
+	}
+	freshFile.close();
+}
+
 void Controller::loadStats()
 {
 	/*
@@ -32,7 +76,6 @@ void Controller::loadStats()
 		
 		Player player{};
 		player.loadFromFile(line);
-		//TODO!!! freshfile and loadfromfile call the same repo function
 		repo.add(player);
 	}
 	for (Player& p : repo.getAll()) {
@@ -97,46 +140,6 @@ void Controller::updatePlayer(Player & player)
 	repo.updatePlayer(player);
 
 	notifyObservers();
-}
-
-void Controller::importUpdatedData(std::string path)
-{
-	/*
-		Load fresh data from the .csv dowloaded from clashofstats and increase the cycle counter
-	*/
-	ifstream freshFile(path);
-
-	char* line = new char[1300];
-	char* char_ptr;				//ptr to the current field in the line
-
-	if (!freshFile.is_open())
-		throw ControllerException{ "Could not open file " + path };
-
-	//read the first line with the headers, we don't need it
-	freshFile.getline(line, 1298);
-	cycle++;
-	while (!freshFile.eof()) {
-		freshFile.getline(line, 1290);
-
-		if (strcmp(line, "")==0)
-			//last line
-			break;
-
-		Player player{};
-		player.loadFromFreshFile(line);
-
-		if (repo.existsByName(player.getName()))
-			//if it already exists, load the new stats into the history vectors
-			updatePlayer(player);
-		else
-			repo.add(player);
-	}
-	delete line;
-	//update the player/s current cycle
-	for (Player& p : repo.getAll()) {
-		p.setCycle(cycle);
-	}
-	freshFile.close();
 }
 
 void Controller::addWarAttacks(string playerName, AttackPair warShow)
@@ -221,6 +224,11 @@ void Controller::updateComments(Player & player, string newText)
 	*/
 	replace(newText.begin(), newText.end(), '\n', '$');
 	repo.getByName(player.getName()).setNotes(newText);
+}
+
+void Controller::updateSpecialRole(Player & player, string newRole)
+{
+	repo.getByName(player.getName()).setSpecialRole(newRole);
 }
 
 string Controller::getComments(const Player & p)

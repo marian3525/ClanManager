@@ -34,8 +34,9 @@ private:
 	QLabel* avgCGScore;
 	QLabel* activities;
 	QLabel* role;
-	QLabel* specialRole;
+	QLineEdit* specialRole;
 	QTextEdit* notes;
 public slots:
 	void onNotesUpdate();
+	void onSpecialRoleChanged();
 };

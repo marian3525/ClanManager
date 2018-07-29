@@ -64,6 +64,7 @@ public:
 	void addWarShow(const AttackPair& warShow);
 	void addClanGamesScore(const int score, const int cycle);
 	void setNotes(string text);
+	void setSpecialRole(const string newRole);
 	std::vector<AttackPair> getWarAttacks() const;
 
 	void computeStats();
@@ -87,4 +88,5 @@ private:
 	int legendTrophies = 0;
 	int cycle = -1;
 	int cc_size = 0;
+	friend class Repo;
 };

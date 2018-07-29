@@ -13,6 +13,7 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QFrame>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QLineEdit>
 #include <QtWidgets/QListView>
 #include <QtWidgets/QTextEdit>
 #include <QtWidgets/QWidget>
@@ -48,8 +49,8 @@ public:
     QLabel *avgCgScoreLabel;
     QLabel *activitiesLabel;
     QLabel *roleLabel;
-    QLabel *specialRoleLabel;
     QTextEdit *notes;
+    QLineEdit *specialRoleInput;
 
     void setupUi(QWidget *DetailWindow)
     {
@@ -139,12 +140,12 @@ public:
         roleLabel = new QLabel(DetailWindow);
         roleLabel->setObjectName(QStringLiteral("roleLabel"));
         roleLabel->setGeometry(QRect(310, 220, 221, 16));
-        specialRoleLabel = new QLabel(DetailWindow);
-        specialRoleLabel->setObjectName(QStringLiteral("specialRoleLabel"));
-        specialRoleLabel->setGeometry(QRect(350, 240, 181, 16));
         notes = new QTextEdit(DetailWindow);
         notes->setObjectName(QStringLiteral("notes"));
         notes->setGeometry(QRect(270, 320, 251, 81));
+        specialRoleInput = new QLineEdit(DetailWindow);
+        specialRoleInput->setObjectName(QStringLiteral("specialRoleInput"));
+        specialRoleInput->setGeometry(QRect(350, 240, 171, 22));
 
         retranslateUi(DetailWindow);
 
@@ -178,7 +179,6 @@ public:
         avgCgScoreLabel->setText(QApplication::translate("DetailWindow", "None", nullptr));
         activitiesLabel->setText(QApplication::translate("DetailWindow", "TextLabel", nullptr));
         roleLabel->setText(QApplication::translate("DetailWindow", "TextLabel", nullptr));
-        specialRoleLabel->setText(QApplication::translate("DetailWindow", "TextLabel", nullptr));
     } // retranslateUi
 
 };

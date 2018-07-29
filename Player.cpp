@@ -444,6 +444,11 @@ void Player::setNotes(string text)
 	this->comments = text;
 }
 
+void Player::setSpecialRole(const string newRole)
+{
+	this->specialRole = newRole;
+}
+
 std::vector<AttackPair> Player::getWarAttacks() const
 {
 	return history.getWarAttacks();

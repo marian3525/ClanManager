@@ -32,6 +32,7 @@ public:
 	std::string getTime(std::string format);
 	Player& getPlayer(string name);
 	void updateComments(Player& player, string newText);
+	void updateSpecialRole(Player& player, string newRole);
 	string getComments(const Player& p);
 
 	enum SortMode {

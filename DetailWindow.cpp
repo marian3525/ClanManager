@@ -140,9 +140,10 @@ void DetailWindow::bindWidgets()
 	avgCGScore = findChild<QLabel*>("avgCgScoreLabel");
 	activities = findChild<QLabel*>("activitiesLabel");
 	role = findChild<QLabel*>("roleLabel");
-	specialRole = findChild<QLabel*>("specialRoleLabel");
+	specialRole = findChild<QLineEdit*>("specialRoleInput");
 	notes = findChild<QTextEdit*>("notes");
 	connect(notes, &QTextEdit::textChanged, this, &DetailWindow::onNotesUpdate);
+	connect(specialRole, &QLineEdit::textChanged, this, &DetailWindow::onSpecialRoleChanged);
 }
 
 void DetailWindow::populateWarAttacks()
@@ -185,6 +186,12 @@ void DetailWindow::populateWarAttacks()
 		output.clear();
 	}
 	model->setStringList(strList);
+}
+
+void DetailWindow::onSpecialRoleChanged()
+{
+	string str = specialRole->text().toStdString();
+	controller->updateSpecialRole(player, str);
 }
 
 void DetailWindow::onNotesUpdate() {

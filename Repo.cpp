@@ -9,8 +9,6 @@ Repo::Repo()
 
 void Repo::add(Player& p)
 {	
-	//not ok from load from file, should be recompute file
-	p.computeStats();
 	players.push_back(p);
 }
 
@@ -24,12 +22,17 @@ void Repo::remove(string tag)
 void Repo::updatePlayer(Player& player)
 {
 	/*
-	update should add the new stats to the vectors in player.history
+		player will contain vectors of size 1 in history for attacks, defenses, donations and requests
+		Add them to p
 	*/
 	Player& p = getByName(player.getName());
-	//update also calls computeStats() for the history
-	p.update(player.getLastAttackWins(), player.getLastDefenseWins(), player.getLastTroopsDonated(),
-		player.getLastTroopsRequested());
+	//add the 4 new values to the vectors
+	p.history.addDefenses(player.getLastDefenseWins());
+	p.history.addAttacks(player.getLastAttackWins());
+	p.history.addDonations(player.getLastTroopsDonated());
+	p.history.addRequests(player.getLastTroopsRequested());
+	//update stats
+	p.computeStats();
 }
 
 Player& Repo::getByName(string name)

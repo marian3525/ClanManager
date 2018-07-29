@@ -32,6 +32,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v141</PlatformToolset>
     <SpectreMitigation>false</SpectreMitigation>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <PlatformToolset>v141</PlatformToolset>
@@ -113,6 +114,7 @@
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
       <WholeProgramOptimization>true</WholeProgramOptimization>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -158,6 +160,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AttackPair.cpp" />
+    <ClCompile Include="ClanGamesScore.cpp" />
     <ClCompile Include="ClanManager.cpp" />
     <ClCompile Include="Controller.cpp" />
     <ClCompile Include="ControllerException.cpp" />
@@ -179,6 +182,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AttackPair.h" />
+    <ClInclude Include="ClanGamesScore.h" />
     <ClInclude Include="ControllerException.h" />
     <QtMoc Include="DetailWindow.h">
       <OutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</OutputFile>

@@ -6,14 +6,157 @@ Player::Player()
 
 }
 
+std::string Player::getTag() const
+{
+	return tag;
+}
+
+std::string Player::getName() const
+{
+	return name;
+}
+
+int Player::getTownHall() const
+{
+	return townHall;
+}
+
+std::string Player::getRole() const
+{
+	return role;
+}
+
+int Player::getRank() const
+{
+	return rank;
+}
+
+int Player::getExperience() const
+{
+	return experience;
+}
+
+std::string Player::getLeague() const
+{
+	return league;
+}
+
+int Player::getTrophies() const
+{
+	return trophies;
+}
+
+int Player::getVersusTrophies() const
+{
+	return versusTrophies;
+}
+
+int Player::getWarStars() const
+{
+	return warStars;
+}
+
+int Player::getLegendTrophies() const
+{
+	return legendTrophies;
+}
+
+int Player::getLastAttackWins() const
+{
+	return history.getLastAttacks();
+}
+
+int Player::getCycleAttackWins(const int cycle) const
+{
+	/*
+		cycle->1...n
+	*/
+	vector<int> wins = history.getAttacks();
+	if (cycle <= wins.size()) {
+		return wins[cycle - 1];
+	}
+	else {
+		return -1;
+	}
+}
+
+int Player::getLastDefenseWins() const
+{
+	return history.getLastDefenses();
+}
+
+int Player::getCycleDefenseWins(const int cycle) const
+{
+	vector<int> def = history.getDefenses();
+	if (cycle <= def.size()) {
+		return def[cycle];
+	}
+	else {
+		return -1;
+	}
+}
+
+int Player::getLastTroopsDonated() const
+{
+	return history.getLastDonations();
+}
+
+int Player::getCycleTroopsDonated(const int cycle) const
+{
+	vector<int> don = history.getDonations();
+	if (cycle <= don.size()) {
+		return don[cycle - 1];
+	}
+	else {
+		return -1;
+	}
+}
+
+int Player::getLastTroopsRequested() const
+{
+	return history.getLastRequests();
+}
+
+int Player::getCycleTroopsRequested(const int cycle) const
+{
+	vector<int> req = history.getRequests();
+	if (cycle <= req.size()) {
+		return req[cycle];
+	}
+	else {
+		return -1;
+	}
+}
+
 float Player::getAvgWarStars() const
 {
 	float avg=0;
 	int counter = 0;
-	for (const AttackPair& attack: history.getAttacks()) {
+	for (const AttackPair& attack: history.getWarAttacks()) {
 		int first = attack.getStars().first;
 		int second = attack.getStars().second;
 		first != -1 ? avg += first : first=first;
+		second != -1 ? avg += second : second = second;
+		counter += attack.attacksDone;
+	}
+	if (counter != 0) {
+		return avg / counter;
+	}
+	else {
+		return avg;
+	}
+}
+
+float Player::getCycleAvgWarStars(const int cycle) const
+{
+	float avg = 0;
+	int counter = 0;
+	for (const AttackPair& attack : history.getWarAttacks()) {
+		if (attack.getCycle() != cycle)
+			continue;
+		int first = attack.getStars().first;
+		int second = attack.getStars().second;
+		first != -1 ? avg += first : first = first;
 		second != -1 ? avg += second : second = second;
 		counter += attack.attacksDone;
 	}
@@ -29,7 +172,24 @@ float Player::getAvgWarScore() const
 {
 	float avg = 0;
 	int counter = 0;
-	for (AttackPair& attack : history.getAttacks()) {
+	for (AttackPair& attack : history.getWarAttacks()) {
+		int perf = attack.getPerformance();
+		perf != -1 ? avg += perf : perf = perf;
+		counter++;
+	}
+	if (counter != 0) {
+		return avg / counter;
+	}
+	else {
+		return avg;
+	}
+}
+
+float Player::getCycleAvgWarScore(const int cycle) const
+{
+	float avg = 0;
+	int counter = 0;
+	for (AttackPair& attack : history.getWarAttacks()) {
 		int perf = attack.getPerformance();
 		perf != -1 ? avg += perf : perf = perf;
 		counter++;
@@ -46,8 +206,8 @@ float Player::getAvgCgScore() const
 {
 	float avg = 0;
 	int counter = 0;
-	for (const int score : history.getGamesScore()) {
-		avg += score;
+	for (const ClanGamesScore score : history.getGamesScores()) {
+		avg += score.getScore();
 		counter++;
 	}
 	if (counter != 0) {
@@ -56,6 +216,89 @@ float Player::getAvgCgScore() const
 	else {
 		return avg;
 	}
+}
+
+float Player::getCycleAvgCgScore(const int cycle) const
+{
+	float avg = 0;
+	int counter = 0;
+	for (const ClanGamesScore score : history.getGamesScores()) {
+		if (score.getCycle() != cycle)
+			continue;
+		avg += score.getScore();
+		counter++;
+	}
+	if (counter != 0) {
+		return avg / counter;
+	}
+	else {
+		return avg;
+	}
+}
+
+float Player::getLastRatio() const
+{
+	return history.getLastRatio();
+}
+
+float Player::getCycleRatio(const int cycle) const
+{
+	vector<float> ratio = history.getRatios();
+	if (cycle <= ratio.size()) {
+		return ratio[cycle - 1];
+	}
+	else {
+		return -1;
+	}
+}
+
+int Player::getLastActivityMetric() const
+{
+	return history.getLastActivity();
+}
+
+int Player::getCycleActivity(const int cycle) const
+{
+	vector<int> act = history.getActivity();
+	if (cycle <= act.size()) {
+		return act[cycle - 1];
+	}
+	else {
+		return -1;
+	}
+}
+
+int Player::getLastContribution() const
+{
+	return history.getLastContribution();
+}
+
+int Player::getCycleContribution(const int cycle) const
+{
+	vector<int> cont = history.getContribution();
+	if (cycle <= cont.size()) {
+		return cont[cycle - 1];
+	}
+	else {
+		return -1;
+	}
+}
+
+ClanGamesScore Player::getLastGamesScore() const
+{
+	return history.getLastGamesScore();
+}
+
+int Player::getCycleGamesScore(const int cycle) const
+{
+	int total = 0;
+	vector<ClanGamesScore> scores = history.getGamesScores();
+	for (const ClanGamesScore& score : scores) {
+		if (score.getCycle() != cycle)
+			continue;
+		total += score.getScore();
+	}
+	return total;
 }
 
 int Player::getCcSize()
@@ -88,6 +331,36 @@ int Player::getCcSize()
 	}
 	history.setCcSize(cc_size);
 	return cc_size;
+}
+
+vector<int> Player::getDonationHistory() const
+{
+	return history.getDonations();
+}
+
+vector<int> Player::getRequestHistory() const
+{
+	return history.getRequests();
+}
+
+vector<float> Player::getRatioHistory() const
+{
+	return history.getRatios();
+}
+
+vector<int> Player::getContributionHistory() const
+{
+	return history.getContribution();
+}
+
+vector<ClanGamesScore> Player::getCgScoreHistory() const
+{
+	return history.getGamesScores();
+}
+
+vector<int> Player::getActivityHistory() const
+{
+	return history.getActivity();
 }
 
 string Player::toString() const
@@ -153,73 +426,27 @@ string Player::toString() const
 
 	return str;
 }
-void Player::addWarAttacksFromFile(char* line)
-{
-	/*
-		line-pointer to a line terminated by \n where war attacks are stored in the format provided by AttackPair::toString()
-		will not free the char pointer
-		Add the war attacks found in the line to the player
-		format for each AttackPair: playerLevel,starsFirst,starsSecond,percentFirst,percentSecond,enemyFirst,enemySecond,attackDone,performance,date
-	*/
-	char* ptr;
-	const char* separators=",\n";
-	const int len = strlen(line);
-	//or just ,?
-
-	ptr = strtok(line, separators);
-
-	while (ptr != NULL) {
-		const int playerThLevel = atoi(ptr);
-
-		ptr = strtok(NULL, separators);
-		const int starsFirst = atoi(ptr);
-		
-		ptr = strtok(NULL, separators);
-		const int starsSecond = atoi(ptr);
-
-		ptr = strtok(NULL, separators);
-		const int percentFirst = atoi(ptr);
-
-		ptr = strtok(NULL, separators);
-		const int percentSecond = atoi(ptr);
-
-		ptr = strtok(NULL, separators);
-		const int enemyFirst = atoi(ptr);
-
-		ptr = strtok(NULL, separators);
-		const int enemySecond = atoi(ptr);
-
-		ptr = strtok(NULL, separators);
-		const int attacksDone = atoi(ptr);
-
-		ptr = strtok(NULL, separators);
-		const int performance = atoi(ptr);
-
-		ptr = strtok(NULL, separators);
-		const string date = string(ptr);
-
-		ptr = strtok(NULL, separators);
-
-		AttackPair warShow{ playerThLevel, starsFirst, starsSecond, percentFirst, percentSecond, enemyFirst, enemySecond, 
-			attacksDone, performance, date };
-
-		//this->warAttacks.push_back(warShow);
-	}
-}
 
 void Player::addWarShow(const AttackPair & warShow)
 {
 	history.addWarShow(warShow);
+	computeStats();
 }
 
-void Player::addClanGamesScore(const int score)
+void Player::addClanGamesScore(const int score, const int cycle)
 {
-	history.addGamesScore(score);
+	history.addGamesScore(score, cycle);
+	computeStats();
 }
 
 void Player::setNotes(string text)
 {
 	this->comments = text;
+}
+
+std::vector<AttackPair> Player::getWarAttacks() const
+{
+	return history.getWarAttacks();
 }
 
 void Player::loadFromFile(char * line)
@@ -421,4 +648,10 @@ void Player::update(const int newAttacks, const int newDefenses, const int newDo
 void Player::computeStats()
 {
 	history.computeStats();
+}
+
+void Player::setCycle(int cycle)
+{
+	this->cycle = cycle;
+	history.setCycle(cycle);
 }

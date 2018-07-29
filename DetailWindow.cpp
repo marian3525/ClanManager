@@ -19,12 +19,12 @@ void DetailWindow::setValues()
 	vector<int> donations = player.getDonationHistory();
 	vector<int> requests = player.getRequestHistory();
 	vector<float> ratios = player.getRatioHistory();
-	vector<float> ratioAdj = player.getAdjustedRatioHistory();
 	vector<int> contributions = player.getContributionHistory();
-	vector<int> cgScores = player.getCgScoreHistory();
+	vector<ClanGamesScore> cgScores = player.getCgScoreHistory();
 	vector<int> activities = player.getActivityHistory();
 	string str;
 
+	//donations
 	for (int i = 0; i < donations.size(); i++) {
 		if (i == 3)
 			break;
@@ -39,6 +39,7 @@ void DetailWindow::setValues()
 	this->donations->setText(QString::fromStdString(str));
 
 	str.clear();
+	//requests
 	for (int i = 0; i < requests.size(); i++) {
 		if (i == 3)
 			break;
@@ -52,6 +53,7 @@ void DetailWindow::setValues()
 	this->requests->setText(QString::fromStdString(str));
 
 	str.clear();
+	//ratios
 	for (int i = 0; i < ratios.size(); i++) {
 		if (i == 3)
 			break;
@@ -65,19 +67,7 @@ void DetailWindow::setValues()
 	this->ratios->setText(QString::fromStdString(str));
 
 	str.clear();
-	for (int i = 0; i < ratioAdj.size(); i++) {
-		if (i == 3)
-			break;
-		str.append(to_string(ratioAdj[i]));
-		str.append(", ");
-	}
-	if (str.size() > 1) {
-		str.pop_back();
-		str.pop_back();
-	}
-	this->ratiosAdj->setText(QString::fromStdString(str));
-
-	str.clear();
+	//contributions
 	for (int i = 0; i < contributions.size(); i++) {
 		if (i == 3)
 			break;
@@ -89,15 +79,16 @@ void DetailWindow::setValues()
 		str.pop_back();
 	}
 	this->contributions->setText(QString::fromStdString(str));
-
-	avgWarScore->setText(QString::number(player.getAvgWarScore()));
-	avgWarStars->setText(QString::number(player.getAvgWarStars()));
-	avgCGScore->setText(QString::number(player.getAvgCgScore()));
 	str.clear();
+	//avg war score
+	avgWarScore->setText(QString::number(player.getAvgWarScore()));
+	//avg war stars this season
+	avgWarStars->setText(QString::number(player.getAvgWarStars()));
+	//CG scores for each season
 	for (int i = 0; i < cgScores.size(); i++) {
 		if (i == 3)
 			break;
-		str.append(to_string(cgScores[i]));
+		str.append(to_string(cgScores[i].getScore()));
 		str.append(", ");
 	}
 	if (str.size() > 1) {
@@ -106,7 +97,11 @@ void DetailWindow::setValues()
 	}
 	this->cgScores->setText(QString::fromStdString(str));
 
+	//avg CG scores
+	avgCGScore->setText(QString::number(player.getAvgCgScore()));
+
 	str.clear();
+	//activities
 	for (int i = 0; i < activities.size(); i++) {
 		if (i == 3)
 			break;
@@ -118,21 +113,26 @@ void DetailWindow::setValues()
 		str.pop_back();
 	}
 	this->activities->setText(QString::fromStdString(str));
-	
+
+	//roles
 	role->setText(QString::fromStdString(player.getRole()));
+
+	//special role
 	specialRole->setText(QString::fromStdString(player.getSpecialRole()));
+
+	//and notes
 	notes->setText(QString::fromStdString(controller->getComments(player)));
 }
 
 void DetailWindow::bindWidgets()
 {
 	warAttacksList = findChild<QListView*>("warAttacksList");
+	warAttacksList->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	warAttacksList->setModel(model);
 
 	donations = findChild<QLabel*>("donationsLabel");
 	requests = findChild<QLabel*>("requestsLabel");
 	ratios = findChild<QLabel*>("ratiosLabel");
-	ratiosAdj = findChild<QLabel*>("ratiosAdjLabel");
 	contributions = findChild<QLabel*>("contributionsLabel");
 	avgWarScore = findChild<QLabel*>("avgWarScoreLabel");
 	avgWarStars = findChild<QLabel*>("avgWarStarsLabel");

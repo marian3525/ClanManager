@@ -78,6 +78,9 @@
     <ClCompile Include="IOException.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ClanGamesScore.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -117,6 +120,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="IOException.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ClanGamesScore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

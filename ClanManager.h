@@ -33,7 +33,6 @@ private:
 	QRadioButton* trophies;
 	QRadioButton* legendTrophies;
 	QRadioButton* versusTrophies;
-	QRadioButton* adjRatio;
 	QRadioButton* contribution;
 	QRadioButton* activity;
 
@@ -62,7 +61,14 @@ private:
 
 	QPushButton* removePlayerButton;
 
+	QLabel* cycleIndicator;
+
 	QAction* loadFreshData;
+	QAction* createTableFile;
+	QAction* help;
+	QAction* about;
+
+	Controller::SortMode lastSort;
 
 	void bindWidgets();
 	void addHeaders();
@@ -84,7 +90,6 @@ public slots:
 	void onTrophiesSelected();
 	void onVersusTrophiesSelected();
 	void onLegendTrophiesSelected();
-	void onAdjRatioSelected();
 	void onContributionSelected();
 	void onActivitySelected();
 	void onAddWarAttack();
@@ -104,5 +109,8 @@ public slots:
 	void onRemove();
 
 	void onLoadFreshData();
+	void onCreateTableFile();
+	void onHelp();
+	void onAbout();
 	void onDetails(const QModelIndex& index);
 };

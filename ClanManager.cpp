@@ -19,6 +19,7 @@ ClanManager::ClanManager(Controller* controller, QWidget *parent)
 	bindWidgets();
 	addHeaders();
 	update();
+	onRatioSelected();
 }
 
 void ClanManager::notify()
@@ -45,7 +46,6 @@ void ClanManager::bindWidgets()
 	trophies = findChild<QRadioButton*>("trophiesRadio");
 	versusTrophies = findChild<QRadioButton*>("versusTrophiesRadio");
 	legendTrophies = findChild<QRadioButton*>("legendRadio");
-	adjRatio = findChild<QRadioButton*>("adjRatioRadio");
 	contribution = findChild<QRadioButton*>("contributionRadio");
 	activity = findChild<QRadioButton*>("activityRadio");
 
@@ -74,9 +74,14 @@ void ClanManager::bindWidgets()
 	removePlayerButton = findChild<QPushButton*>("removePlayer");
 
 	loadFreshData = findChild<QAction*>("actionLoadFreshData");
+	createTableFile = findChild<QAction*>("actionCreateTableFile");
+	help = findChild<QAction*>("actionHelp");
+	about = findChild<QAction*>("actionAbout");
+
+	cycleIndicator = findChild<QLabel*>("cycleLabel");
+
 
 	connect(playerList, &QTableView::doubleClicked, this, &ClanManager::onDetails);
-
 	connect(donations, &QRadioButton::clicked, this, &ClanManager::onDonationsSelected);
 	connect(requests, &QRadioButton::clicked, this, &ClanManager::onRequestsSelected);
 	connect(attacks, &QRadioButton::clicked, this, &ClanManager::onAttacksSelected);
@@ -86,7 +91,6 @@ void ClanManager::bindWidgets()
 	connect(trophies, &QRadioButton::clicked, this, &ClanManager::onTrophiesSelected);
 	connect(versusTrophies, &QRadioButton::clicked, this, &ClanManager::onVersusTrophiesSelected);
 	connect(legendTrophies, &QRadioButton::clicked, this, &ClanManager::onLegendTrophiesSelected);
-	connect(adjRatio, &QRadioButton::clicked, this, &ClanManager::onAdjRatioSelected);
 	connect(contribution, &QRadioButton::clicked, this, &ClanManager::onContributionSelected);
 	connect(activity, &QRadioButton::clicked, this, &ClanManager::onActivitySelected);
 
@@ -100,15 +104,17 @@ void ClanManager::bindWidgets()
 	connect(second1Star, &QRadioButton::clicked, this, &ClanManager::onSecond1Star);
 	connect(second2Star, &QRadioButton::clicked, this, &ClanManager::onSecond2Star);
 	connect(second3Star, &QRadioButton::clicked, this, &ClanManager::onSecond3Star);
-
 	connect(removePlayerButton, &QPushButton::clicked, this, &ClanManager::onRemove);
 	//in the menu:
 	connect(loadFreshData, &QAction::triggered, this, &ClanManager::onLoadFreshData);
+	connect(createTableFile, &QAction::triggered, this, &ClanManager::onCreateTableFile);
+	connect(help, &QAction::triggered, this, &ClanManager::onHelp);
+	connect(about, &QAction::triggered, this, &ClanManager::onAbout);
 }
 
 void ClanManager::addHeaders()
 {
-	vector<string> header{ "Name", "Role", "Trophies", "Attacks", "Defenses", "Donations", "Requests", "Ratio", "Adj.Ratio", "Activity", "Contribution" };
+	vector<string> header{ "Name", "Role", "Trophies", "Attacks", "Defenses", "Donations", "Requests", "Ratio", "Activity", "Contribution" };
 	for (int i = 0; i < header.size(); i++) {
 		model->setHorizontalHeaderItem(i, new QStandardItem(QString::fromStdString(header[i])));
 	}
@@ -119,6 +125,7 @@ void ClanManager::addHeaders()
 void ClanManager::update()
 {
 	memberCounter->display(controller->getSize());
+	cycleIndicator->setText(QString::number(controller->getCycle()));
 	//maintain this order
 	//controller->computeMetrics();
 	populateRows();
@@ -131,14 +138,13 @@ void ClanManager::update()
 	playerList->setColumnWidth(6, 70);
 	playerList->setColumnWidth(7, 70);
 	playerList->setColumnWidth(8, 70);
-	playerList->setColumnWidth(9, 70);
-	playerList->setColumnWidth(10, 85);
+	playerList->setColumnWidth(9, 85);
 }
 
 void ClanManager::populateRows()
 {	
 	int index = 0;
-	for (const Player& p : controller->getAll()) {
+	for (const Player& p : controller->getAllPlayers()) {
 		QStandardItem* name = new QStandardItem(QString::fromStdString(p.getName()));
 		name->setSelectable(true);
 		model->setItem(index, 0, name);
@@ -151,37 +157,33 @@ void ClanManager::populateRows()
 		trophies->setSelectable(false);
 		model->setItem(index, 2, trophies);
 
-		QStandardItem* attacks = new QStandardItem(QString::fromStdString(to_string(p.getAttackWins())));
+		QStandardItem* attacks = new QStandardItem(QString::fromStdString(to_string(p.getLastAttackWins())));
 		attacks->setSelectable(false);
 		model->setItem(index, 3, attacks);
 
-		QStandardItem* defenses = new QStandardItem(QString::fromStdString(to_string(p.getDefenseWins())));
+		QStandardItem* defenses = new QStandardItem(QString::fromStdString(to_string(p.getLastDefenseWins())));
 		defenses->setSelectable(false);
 		model->setItem(index, 4, defenses);
 
-		QStandardItem* donations = new QStandardItem(QString::fromStdString(to_string(p.getTroopsDonated())));
+		QStandardItem* donations = new QStandardItem(QString::fromStdString(to_string(p.getLastTroopsDonated())));
 		donations->setSelectable(false);
 		model->setItem(index, 5, donations);
 
-		QStandardItem* requests = new QStandardItem(QString::fromStdString(to_string(p.getTroopsRequested())));
+		QStandardItem* requests = new QStandardItem(QString::fromStdString(to_string(p.getLastTroopsRequested())));
 		requests->setSelectable(false);
 		model->setItem(index, 6, requests);
 
-		QStandardItem* ratio = new QStandardItem(QString::fromStdString(p.getRatioStr()));
+		QStandardItem* ratio = new QStandardItem(QString::fromStdString(to_string(p.getLastRatio())));
 		ratio->setSelectable(false);
 		model->setItem(index, 7, ratio);
 
-		QStandardItem* ratioAdj = new QStandardItem(QString::fromStdString(p.getRatioAdjustedStr()));
-		ratioAdj->setSelectable(false);
-		model->setItem(index, 8, ratioAdj);
-
-		QStandardItem* activity = new QStandardItem(QString::fromStdString(p.getActivityMetricStr()));
+		QStandardItem* activity = new QStandardItem(QString::fromStdString(to_string(p.getLastActivityMetric())));
 		activity->setSelectable(false);
-		model->setItem(index, 9, activity);
+		model->setItem(index, 8, activity);
 
-		QStandardItem* contribution = new QStandardItem(QString::fromStdString(p.getContributionStr()));
+		QStandardItem* contribution = new QStandardItem(QString::fromStdString(to_string(p.getLastContribution())));
 		contribution->setSelectable(false);
-		model->setItem(index, 10, contribution);
+		model->setItem(index, 9, contribution);
 
 		index++;
 	}
@@ -229,61 +231,67 @@ int ClanManager::getEnemy2Level()
 void ClanManager::onDonationsSelected()
 {
 	controller->sort(Controller::SortMode::donationDec);
+	lastSort = Controller::SortMode::donationDec;
 }
 
 void ClanManager::onRequestsSelected()
 {
 	controller->sort(Controller::SortMode::requestDec);
+	lastSort = Controller::SortMode::requestDec;
 }
 
 void ClanManager::onAttacksSelected()
 {
 	controller->sort(Controller::SortMode::attackWins);
+	lastSort = Controller::SortMode::attackWins;
 }
 
 void ClanManager::onDefensesSelected()
 {
 	controller->sort(Controller::SortMode::defenseWins);
+	lastSort = Controller::SortMode::defenseWins;
 }
 
 void ClanManager::onRatioSelected()
 {
 	controller->sort(Controller::SortMode::ratioDec);
+	lastSort = Controller::SortMode::ratioDec;
 }
 
 void ClanManager::onWarStarsSelected()
 {
 	controller->sort(Controller::SortMode::warStars);
+	lastSort = Controller::SortMode::warStars;
 }
 
 void ClanManager::onTrophiesSelected()
 {
 	controller->sort(Controller::SortMode::trophies);
+	lastSort = Controller::SortMode::trophies;
 }
 
 void ClanManager::onVersusTrophiesSelected()
 {
 	controller->sort(Controller::SortMode::versusTrophies);
+	lastSort = Controller::SortMode::versusTrophies;
 }
 
 void ClanManager::onLegendTrophiesSelected()
 {
 	controller->sort(Controller::SortMode::legendTrophies);
-}
-
-void ClanManager::onAdjRatioSelected()
-{
-	controller->sort(Controller::SortMode::ratioAdj);
+	lastSort = Controller::SortMode::legendTrophies;
 }
 
 void ClanManager::onContributionSelected()
 {
 	controller->sort(Controller::SortMode::contribution);
+	lastSort = Controller::SortMode::contribution;
 }
 
 void ClanManager::onActivitySelected()
 {
 	controller->sort(Controller::SortMode::activityMetric);
+	lastSort = Controller::SortMode::activityMetric;
 }
 
 void ClanManager::onAddWarAttack()
@@ -299,7 +307,7 @@ void ClanManager::onAddWarAttack()
 
 	for (QModelIndex idx : indexes) {
 		string name = playerList->model()->data(idx).toString().toStdString();
-		AttackPair show{ controller->getPlayerThLevel(name), date };
+		AttackPair show{ controller->getPlayerThLevel(name), date, controller->getCycle()};
 
 		int stars1, stars2, enemy1, enemy2, percent1, percent2;
 		bool noShow1, noShow2;
@@ -325,6 +333,7 @@ void ClanManager::onAddWarAttack()
 		}
 		controller->addWarAttacks(name, show);
 	}
+	controller->sort(lastSort);
 }
 
 void ClanManager::onAddCGScore()
@@ -338,6 +347,8 @@ void ClanManager::onAddCGScore()
 		string name = playerList->model()->data(idx).toString().toStdString();
 		controller->addClanGamesScore(name, score);
 	}
+	//sort again
+	controller->sort(lastSort);
 }
 
 void ClanManager::onFirst1Star()
@@ -426,6 +437,19 @@ void ClanManager::onLoadFreshData()
 		QMessageBox::warning(this, "Invalid format in file. The application will now exit", QString::fromStdString(e.getMessage()));
 		exit(0);
 	}
+}
+
+void ClanManager::onCreateTableFile()
+{
+	controller->storeTable();
+}
+
+void ClanManager::onHelp()
+{
+}
+
+void ClanManager::onAbout()
+{
 }
 
 void ClanManager::onDetails(const QModelIndex & index)

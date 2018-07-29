@@ -37,6 +37,9 @@ class Ui_ClanManagerClass
 {
 public:
     QAction *actionLoadFreshData;
+    QAction *actionCreateTableFile;
+    QAction *actionHelp;
+    QAction *actionAbout;
     QWidget *centralWidget;
     QWidget *gridLayoutWidget;
     QGridLayout *gridLayout;
@@ -86,9 +89,12 @@ public:
     QComboBox *comboBox;
     QLabel *label_11;
     QPushButton *removePlayer;
+    QLabel *label_12;
+    QLabel *cycleLabel;
     QMenuBar *menuBar;
     QMenu *menuActions;
     QMenu *menuOptions;
+    QMenu *menuHelp;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
 
@@ -103,6 +109,12 @@ public:
         actionLoadFreshData = new QAction(ClanManagerClass);
         actionLoadFreshData->setObjectName(QStringLiteral("actionLoadFreshData"));
         actionLoadFreshData->setAutoRepeat(false);
+        actionCreateTableFile = new QAction(ClanManagerClass);
+        actionCreateTableFile->setObjectName(QStringLiteral("actionCreateTableFile"));
+        actionHelp = new QAction(ClanManagerClass);
+        actionHelp->setObjectName(QStringLiteral("actionHelp"));
+        actionAbout = new QAction(ClanManagerClass);
+        actionAbout->setObjectName(QStringLiteral("actionAbout"));
         centralWidget = new QWidget(ClanManagerClass);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         gridLayoutWidget = new QWidget(centralWidget);
@@ -463,6 +475,12 @@ public:
         removePlayer = new QPushButton(centralWidget);
         removePlayer->setObjectName(QStringLiteral("removePlayer"));
         removePlayer->setGeometry(QRect(510, 780, 111, 27));
+        label_12 = new QLabel(centralWidget);
+        label_12->setObjectName(QStringLiteral("label_12"));
+        label_12->setGeometry(QRect(670, 0, 61, 16));
+        cycleLabel = new QLabel(centralWidget);
+        cycleLabel->setObjectName(QStringLiteral("cycleLabel"));
+        cycleLabel->setGeometry(QRect(730, 0, 55, 16));
         ClanManagerClass->setCentralWidget(centralWidget);
         enemyFirst->raise();
         gridLayoutWidget->raise();
@@ -510,6 +528,8 @@ public:
         comboBox->raise();
         label_11->raise();
         removePlayer->raise();
+        label_12->raise();
+        cycleLabel->raise();
         menuBar = new QMenuBar(ClanManagerClass);
         menuBar->setObjectName(QStringLiteral("menuBar"));
         menuBar->setGeometry(QRect(0, 0, 1631, 25));
@@ -517,6 +537,8 @@ public:
         menuActions->setObjectName(QStringLiteral("menuActions"));
         menuOptions = new QMenu(menuBar);
         menuOptions->setObjectName(QStringLiteral("menuOptions"));
+        menuHelp = new QMenu(menuBar);
+        menuHelp->setObjectName(QStringLiteral("menuHelp"));
         ClanManagerClass->setMenuBar(menuBar);
         mainToolBar = new QToolBar(ClanManagerClass);
         mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
@@ -527,7 +549,11 @@ public:
 
         menuBar->addAction(menuActions->menuAction());
         menuBar->addAction(menuOptions->menuAction());
+        menuBar->addAction(menuHelp->menuAction());
         menuActions->addAction(actionLoadFreshData);
+        menuActions->addAction(actionCreateTableFile);
+        menuHelp->addAction(actionHelp);
+        menuHelp->addAction(actionAbout);
 
         retranslateUi(ClanManagerClass);
 
@@ -541,6 +567,9 @@ public:
 #ifndef QT_NO_WHATSTHIS
         actionLoadFreshData->setWhatsThis(QApplication::translate("ClanManagerClass", "Load fresh data from a .csv file", nullptr));
 #endif // QT_NO_WHATSTHIS
+        actionCreateTableFile->setText(QApplication::translate("ClanManagerClass", "Create table file", nullptr));
+        actionHelp->setText(QApplication::translate("ClanManagerClass", "Help", nullptr));
+        actionAbout->setText(QApplication::translate("ClanManagerClass", "About", nullptr));
         donationsRadio->setText(QApplication::translate("ClanManagerClass", "Donations", nullptr));
         requestsRadio->setText(QApplication::translate("ClanManagerClass", "Requests", nullptr));
         attacksRadio->setText(QApplication::translate("ClanManagerClass", "Attacks", nullptr));
@@ -575,8 +604,11 @@ public:
         noShowSecond->setText(QApplication::translate("ClanManagerClass", "No show", nullptr));
         label_11->setText(QApplication::translate("ClanManagerClass", "View:", nullptr));
         removePlayer->setText(QApplication::translate("ClanManagerClass", "Remove Player", nullptr));
+        label_12->setText(QApplication::translate("ClanManagerClass", "Cycle #:", nullptr));
+        cycleLabel->setText(QString());
         menuActions->setTitle(QApplication::translate("ClanManagerClass", "Actions", nullptr));
         menuOptions->setTitle(QApplication::translate("ClanManagerClass", "Options", nullptr));
+        menuHelp->setTitle(QApplication::translate("ClanManagerClass", "Extra", nullptr));
     } // retranslateUi
 
 };

@@ -69,8 +69,9 @@ string PlayerHistory::toString() const
 	str.append(",");
 	for (int activity : activities) {
 		str.append(to_string(activity));
+		str.append(",");
 	}
-	str.append(",[/activity]");
+	str.append("[/activity]");
 	str.append(",");
 
 	str.append("[ratio]");
@@ -102,8 +103,10 @@ string PlayerHistory::toString() const
 
 	str.append("[gamesScores]");
 	str.append(",");
-	for (int score : gamesScores) {
-		str.append(to_string(score));
+	for (const ClanGamesScore& score : gamesScores) {
+		str.append(to_string(score.getScore()));
+		str.append(",");
+		str.append(to_string(score.getCycle()));
 		str.append(",");
 	}
 	str.append("[/gamesScores]");
@@ -178,7 +181,7 @@ void PlayerHistory::readHistoryFromStatsLine(char * line)
 	}
 	ptr = strtok(NULL, ",");
 	while (strcmp(ptr, "[/warAttacks]")) {
-		int thLvl, stars1, stars2, percent1, percent2, enemy1, enemy2, attacksDone, perf;
+		int thLvl, stars1, stars2, percent1, percent2, enemy1, enemy2, attacksDone, perf, cycle;
 		string date;
 
 		thLvl = stoi(ptr);
@@ -200,8 +203,10 @@ void PlayerHistory::readHistoryFromStatsLine(char * line)
 		perf = stoi(ptr);
 		ptr = strtok(NULL, ",");
 		date = string(ptr);
+		ptr = strtok(NULL, ",");
+		cycle = stoi(ptr);
 
-		AttackPair show{ thLvl, stars1, stars2, percent1, percent2, enemy1, enemy2, attacksDone, perf, date };
+		AttackPair show{ thLvl, stars1, stars2, percent1, percent2, enemy1, enemy2, attacksDone, perf, date, cycle };
 		warAttacks.push_back(show);
 
 		ptr = strtok(NULL, ",");
@@ -257,8 +262,11 @@ void PlayerHistory::readHistoryFromStatsLine(char * line)
 	}
 	ptr = strtok(NULL, ",");
 	while (strcmp(ptr ,"[/gamesScores]")) {
-		int gamesScores = stoi(ptr);
-		this->gamesScores.push_back(gamesScores);
+		int scores = stoi(ptr);
+		ptr = strtok(NULL, ",");
+		int cycle = stoi(ptr);
+		ClanGamesScore gamesScore{ scores, cycle };
+		this->gamesScores.push_back(gamesScore);
 		ptr = strtok(NULL, ",");
 	}
 
@@ -266,6 +274,7 @@ void PlayerHistory::readHistoryFromStatsLine(char * line)
 	if (strcmp(ptr, "[/history]")) {
 		throw IOException{ "Unexpected token" };
 	}
+	recomputeStats();
 }
 
 void PlayerHistory::addRatio(const float ratio)
@@ -283,7 +292,7 @@ float PlayerHistory::getLastRatio() const
 	}
 }
 
-std::vector<float> PlayerHistory::getRatioList()
+std::vector<float> PlayerHistory::getRatios() const
 {
 	return ratios;
 }
@@ -323,7 +332,7 @@ int PlayerHistory::getLastActivity() const
 	}
 }
 
-std::vector<int> PlayerHistory::getActivity()
+std::vector<int> PlayerHistory::getActivity() const
 {
 	return activities;
 }
@@ -343,7 +352,7 @@ float PlayerHistory::getLastContribution() const
 	}
 }
 
-std::vector<int> PlayerHistory::getContribution()
+std::vector<int> PlayerHistory::getContribution() const
 {
 	return contributions;
 }
@@ -363,7 +372,7 @@ int PlayerHistory::getLastDonations() const
 	}
 }
 
-std::vector<int> PlayerHistory::getDonations()
+std::vector<int> PlayerHistory::getDonations() const
 {
 	return donations;
 }
@@ -383,7 +392,7 @@ int PlayerHistory::getLastRequests() const
 	}
 }
 
-std::vector<int> PlayerHistory::getRequests()
+std::vector<int> PlayerHistory::getRequests() const
 {
 	return requests;
 }
@@ -423,7 +432,7 @@ int PlayerHistory::getLastAttacks() const
 	}
 }
 
-std::vector<int> PlayerHistory::getAttacks()
+std::vector<int> PlayerHistory::getAttacks() const
 {
 	return attacks;
 }
@@ -443,74 +452,129 @@ int PlayerHistory::getLastDefenses() const
 	}
 }
 
-std::vector<int> PlayerHistory::getDefenses()
+std::vector<int> PlayerHistory::getDefenses() const
 {
 	return defenses;
 }
 
-void PlayerHistory::addGamesScore(const int gamesScore)
+void PlayerHistory::addGamesScore(const int gamesScore, const int cycle)
 {
-	gamesScores.push_back(gamesScore);
+	ClanGamesScore score{ gamesScore, cycle };
+	gamesScores.push_back(score);
 }
 
-int PlayerHistory::getLastGamesScore() const
+ClanGamesScore PlayerHistory::getLastGamesScore() const
 {
 	if (gamesScores.size() == 0) {
-		return 0;
+		return ClanGamesScore();
 	}
 	else {
 		return gamesScores.back();
 	}
 }
 
-std::vector<int> PlayerHistory::getGamesScore() const
+std::vector<ClanGamesScore> PlayerHistory::getGamesScores() const
 {
 	return gamesScores;
 }
 
-void PlayerHistory::computeStats()
+int PlayerHistory::getCycleWarScore(int cycle)
+{
+	/*
+		return the sum of the war scores from the wars of the given cycle
+	*/
+	int sum = 0;
+	for(AttackPair& p:warAttacks){
+		if (p.getCycle() == cycle) 
+			sum += p.getPerformance(); 
+	}
+	return sum;
+}
+
+int PlayerHistory::getCycleGamesScore(int cycle)
+{
+	/*
+		return the sun of the clan games scores from the games in the given cycle
+	*/
+	int sum = 0;
+	for_each(gamesScores.begin(), gamesScores.end(), [&sum, &cycle](const ClanGamesScore& score) {if (score.getCycle() == cycle) sum += score.getScore();});
+	return sum;
+}
+
+void PlayerHistory::setCycle(int cycle)
+{
+	this->currentCycle = cycle;
+}
+
+void PlayerHistory::recomputeStats()
 {
 	/*
 		called after adding new stats from the new data file every cycle
 	*/
-	//the common ratio
-	float ratio=0;
-	if (getLastRequests() != 0) {
-		if (getLastDonations() != 0)
-			ratio = (float)getLastDonations() / getLastRequests();
-		else
-			ratio = 1;
-	}
-	else {
-		ratio = getLastDonations();
-	}
-	//replace the last recorded ratio
-	if (ratios.size() != 0) {
-		ratios.pop_back();
-	}
-	ratios.push_back(ratio);
-
-	//adjusted ratio
-	float ratioAdj=0;
-	if (ratiosAdj.size() != 0) {
-		ratiosAdj.pop_back();
-	}
-	ratiosAdj.push_back(ratioAdj);
-
 	//activity masurement
-	float activity=0;
-	activity = cc_size * (getLastRequests()+getLastDonations()) + getLastGamesScore();
-	//TODO add war activity
+	float activity = 0;
+	activity = getLastRequests() + getLastDonations() + cc_size * getLastAttacks();
 	if (activities.size() != 0) {
 		activities.pop_back();
 	}
 	activities.push_back(activity);
 
 	//contributions
-	int contribution = activity;
-	contribution *= getLastRatio();
+	int adj = 5;
+	int contribution = adj * getCycleWarScore(currentCycle);
+	contribution += getLastDonations() + getCycleGamesScore(currentCycle) + adj * getCycleWarScore(currentCycle);
+	contribution *= 3;
+
 	if (contributions.size() != 0) {
 		contributions.pop_back();
 	}
 	contributions.push_back(contribution);
+
+	//ratio adjusted for activity and CG&wars
+	float ratio=0;
+	if (contribution != 0) {
+		if (activity != 0)
+			ratio = (float)contribution / activity;
+		else
+			ratio = 1;
+	}
+	else {
+		ratio = contribution;
+	}
+	//replace the last recorded ratio
+	if (ratios.size() != 0) {
+		ratios.pop_back();
+	}
+	ratios.push_back(ratio);
+}
+
+void PlayerHistory::computeStats()
+{
+	/*
+		Update the vectors, don't add new values
+	*/
+	//activity masurement
+	float activity = 0;
+	activity = getLastRequests() + getLastDonations() + cc_size * getLastAttacks();
+	activities.push_back(activity);
+
+	//contributions
+	int adj = 5;
+	int contribution = adj * getCycleWarScore(currentCycle);
+	contribution += getLastDonations() + getCycleGamesScore(currentCycle) + adj * getCycleWarScore(currentCycle);
+	contribution *= 3;
+	contributions.push_back(contribution);
+
+	//ratio adjusted for activity and CG&wars
+	float ratio = 0;
+	if (contribution != 0) {
+		if (activity != 0)
+			ratio = (float)contribution / activity;
+		else
+			ratio = 1;
+	}
+	else {
+		ratio = contribution;
+	}
+	ratios.push_back(ratio);
 }

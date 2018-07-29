@@ -21,15 +21,23 @@ void Controller::loadStats()
 		throw ControllerException{ "Could not open file: " + statsFilename };
 	}
 	
+	statsInput.getline(line, 10000);
+	ptr = strtok(line, ",");	//[cycle]
+	ptr = strtok(NULL, ",");	//value
+	cycle = stoi(ptr);
+	ptr = strtok(NULL, ",");	//[/cycle]
+
 	while (!statsInput.eof()) {
 		statsInput.getline(line, 10000);
 		
 		Player player{};
 		player.loadFromFile(line);
-
+		//TODO!!! freshfile and loadfromfile call the same repo function
 		repo.add(player);
 	}
-
+	for (Player& p : repo.getAll()) {
+		p.setCycle(cycle);
+	}
 	statsInput.close();
 }
 
@@ -42,7 +50,12 @@ void Controller::storeStats()
 	string outputString;
 
 	if (!stats.is_open())
-		throw new ControllerException{ "Cannot open file " + statsFilename };
+		throw ControllerException{ "Cannot open file " + statsFilename };
+
+	outputString.append("[cycle],");
+	outputString.append(to_string(cycle));
+	outputString.append(",[/cycle]");
+	outputString.append("\n");
 
 	for (const Player& player : repo.getAll()) {
 		outputString.append(player.toString() + '\n');
@@ -51,6 +64,23 @@ void Controller::storeStats()
 	outputString.pop_back();
 	stats << outputString;
 	stats.close();
+}
+
+void Controller::storeTable()
+{
+	ofstream tbl(tableFilename);
+	string output;
+
+	//the table header
+	output.append("Tag,Name,Role,Trophies,Attacks,Defenses,Donations,Requests,Ratio,Activity,Contribution");
+	for (const Player& p : repo.getAll()) {
+		output.append("\n");
+		output.append(p.getTag() + "," + p.getName() + "," + p.getRole() + "," + to_string(p.getTrophies()) + "," + to_string(p.getLastAttackWins()) + ","
+			+ to_string(p.getLastDefenseWins()) + "," + to_string(p.getLastTroopsDonated()) + "," + to_string(p.getLastTroopsRequested()) + "," + to_string(p.getLastRatio()) + "," +
+			to_string(p.getLastActivityMetric()) + "," + to_string(p.getLastContribution()));
+	}
+	tbl << output;
+	tbl.close();
 }
 
 void Controller::removePlayer(string tag)
@@ -72,7 +102,7 @@ void Controller::updatePlayer(Player & player)
 void Controller::importUpdatedData(std::string path)
 {
 	/*
-		Load fresh data from the .csv dowloaded from clashofstats
+		Load fresh data from the .csv dowloaded from clashofstats and increase the cycle counter
 	*/
 	ifstream freshFile(path);
 
@@ -84,7 +114,7 @@ void Controller::importUpdatedData(std::string path)
 
 	//read the first line with the headers, we don't need it
 	freshFile.getline(line, 1298);
-
+	cycle++;
 	while (!freshFile.eof()) {
 		freshFile.getline(line, 1290);
 
@@ -102,17 +132,22 @@ void Controller::importUpdatedData(std::string path)
 			repo.add(player);
 	}
 	delete line;
+	//update the player/s current cycle
+	for (Player& p : repo.getAll()) {
+		p.setCycle(cycle);
+	}
 	freshFile.close();
 }
 
 void Controller::addWarAttacks(string playerName, AttackPair warShow)
 {
 	repo.getByName(playerName).addWarShow(warShow);
+	
 }
 
 void Controller::addClanGamesScore(std::string playerName, int score)
 {
-	repo.getByName(playerName).addClanGamesScore(score);
+	repo.getByName(playerName).addClanGamesScore(score, cycle);
 }
 
 int Controller::getPlayerThLevel(string name)
@@ -145,7 +180,7 @@ void Controller::onExit()
 	storeStats();
 }
 
-vector<Player> Controller::getAll()
+vector<Player> Controller::getAllPlayers()
 {
 	return repo.getAll();
 }
@@ -203,16 +238,16 @@ void Controller::sort(SortMode mode)
 
 	switch (mode) {
 	case donationInc:
-		cmp = [](const Player& a, const Player& b) {return a.getTroopsDonated() < b.getTroopsDonated(); };
+		cmp = [](const Player& a, const Player& b) {return a.getLastTroopsDonated() < b.getLastTroopsDonated(); };
 		break;
 	case donationDec:
-		cmp = [](const Player& a, const Player& b) {return a.getTroopsDonated() > b.getTroopsDonated(); };
+		cmp = [](const Player& a, const Player& b) {return a.getLastTroopsDonated() > b.getLastTroopsDonated(); };
 		break;
 	case requestInc:
-		cmp = [](const Player& a, const Player& b) {return a.getTroopsRequested() < b.getTroopsRequested(); };
+		cmp = [](const Player& a, const Player& b) {return a.getLastTroopsRequested() < b.getLastTroopsRequested(); };
 		break;
 	case requestDec:
-		cmp = [](const Player& a, const Player& b) {return a.getTroopsRequested() > b.getTroopsRequested(); };
+		cmp = [](const Player& a, const Player& b) {return a.getLastTroopsRequested() > b.getLastTroopsRequested(); };
 		break;
 	case xp:
 		cmp = [](const Player& a, const Player& b) {return a.getExperience() > b.getExperience(); };
@@ -221,16 +256,16 @@ void Controller::sort(SortMode mode)
 		cmp = [](const Player& a, const Player& b) {return a.getTownHall() > b.getTownHall();; };
 		break;
 	case attackWins:
-		cmp = [](const Player& a, const Player& b) {return a.getAttackWins() > b.getAttackWins(); };
+		cmp = [](const Player& a, const Player& b) {return a.getLastAttackWins() > b.getLastAttackWins(); };
 		break;
 	case defenseWins:
-		cmp = [](const Player& a, const Player& b) {return a.getDefenseWins() > b.getDefenseWins(); };
+		cmp = [](const Player& a, const Player& b) {return a.getLastDefenseWins() > b.getLastDefenseWins(); };
 		break;
 	case ratioInc:
-		cmp = [](const Player& a, const Player& b) {return a.getRatio() < b.getRatio(); };
+		cmp = [](const Player& a, const Player& b) {return a.getLastRatio() < b.getLastRatio(); };
 		break;
 	case ratioDec:
-		cmp = [](const Player& a, const Player& b) {return a.getRatio() > b.getRatio(); };
+		cmp = [](const Player& a, const Player& b) {return a.getLastRatio() > b.getLastRatio(); };
 		break;
 	case warStars:
 		cmp = [](const Player& a, const Player& b) {return a.getWarStars() > b.getWarStars(); };
@@ -244,14 +279,14 @@ void Controller::sort(SortMode mode)
 	case legendTrophies:
 		cmp = [](const Player& a, const Player& b) {return a.getLegendTrophies() > b.getLegendTrophies(); };
 		break;
-	case ratioAdj:
-		cmp = [](const Player& a, const Player& b) {return a.getRatioAdjusted() > b.getRatioAdjusted(); };
-		break;
+	//case ratioAdj:
+	//	cmp = [](const Player& a, const Player& b) {return a.getLastRatioAdjusted() > b.getLastRatioAdjusted(); };
+	//	break;
 	case activityMetric:
-		cmp = [](const Player& a, const Player& b) {return a.getActivityMetric() > b.getActivityMetric(); };
+		cmp = [](const Player& a, const Player& b) {return a.getLastActivityMetric() > b.getLastActivityMetric(); };
 		break;
 	case contribution:
-		cmp = [](const Player& a, const Player& b) {return a.getContribution() > b.getContribution(); };
+		cmp = [](const Player& a, const Player& b) {return a.getLastContribution() > b.getLastContribution(); };
 		break;
 	}
 	std::sort(repo.getAll().begin(), repo.getAll().end(), cmp);
@@ -297,17 +332,17 @@ float Controller::computeActivityMetric(Player & p)
 	case 12:
 		cc_size = 40;
 	}
-	activityMetric = p.getAttackWins() * cc_size + p.getTroopsDonated() + p.getTroopsRequested();
+	activityMetric = p.getLastAttackWins() * cc_size + p.getLastTroopsDonated() + p.getLastTroopsRequested();
 	return activityMetric;
 }
 
 float Controller::computeRatioAdj(Player & p)
 {
 	float ratioAdj;
-	if (p.getAttackWins() != 0)
-		ratioAdj = p.getTroopsRequested() / p.getAttackWins();
+	if (p.getLastAttackWins() != 0)
+		ratioAdj = p.getLastTroopsRequested() / p.getLastAttackWins();
 	else
-		ratioAdj = p.getTroopsRequested();
+		ratioAdj = p.getLastTroopsRequested();
 	
 	ratioAdj /= p.getCcSize();
 	
@@ -316,20 +351,24 @@ float Controller::computeRatioAdj(Player & p)
 
 float Controller::computeContribution(Player & p)
 {
+	/*
+		get the contribution for the current cycle
+	*/
 	float contribution=0;
 
-	contribution += p.getTroopsDonated();
-	contribution += p.getGamesScore();
+	contribution += p.getLastTroopsDonated();
+	contribution += p.getLastGamesScore().getScore();
+
 	return contribution;
 }
 
 float Controller::computeCcsUsedPerBattle(Player & p)
 {
 	float ccs;
-	if (p.getAttackWins() != 0)
-		ccs = p.getTroopsRequested() / p.getAttackWins();
+	if (p.getLastAttackWins() != 0)
+		ccs = p.getLastTroopsRequested() / p.getLastAttackWins();
 	else
-		ccs = p.getTroopsRequested();
+		ccs = p.getLastTroopsRequested();
 
 	ccs /= p.getCcSize();
 

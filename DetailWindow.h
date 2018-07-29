@@ -27,7 +27,6 @@ private:
 	QLabel* donations;
 	QLabel* requests;
 	QLabel* ratios;
-	QLabel* ratiosAdj;
 	QLabel* contributions;
 	QLabel* avgWarScore;
 	QLabel* avgWarStars;

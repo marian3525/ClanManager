@@ -445,6 +445,8 @@ std::string AttackPair::toString() const
 	str.append(to_string(performance));
 	str.append(",");
 	str.append(date);
+	str.append(",");
+	str.append(to_string(cycle));
 
 	return str;
 }

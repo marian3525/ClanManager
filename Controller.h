@@ -22,12 +22,13 @@ public:
 	void importUpdatedData(std::string path);
 	void loadStats();
 	void storeStats();
+	void storeTable();
 
 	int getPlayerThLevel(std::string name);
 	int getSize();
 	void registerObserver(Observer* observer);
 	void onExit();
-	std::vector<Player> getAll();
+	std::vector<Player> getAllPlayers();
 	std::string getTime(std::string format);
 	Player& getPlayer(string name);
 	void updateComments(Player& player, string newText);
@@ -38,11 +39,11 @@ public:
 		warStars, trophies, versusTrophies, legendTrophies, ratioAdj, contribution, activityMetric
 	};
 	void sort(SortMode mode);
-
+	int getCycle() const { return cycle; }
 
 private:
 	Repo repo{};
-	std::string statsFilename = "playerStats.";
+	std::string statsFilename = "playerStats";
 	std::string tableFilename = "table.csv";		//debug
 
 	void notifyObservers();
@@ -52,5 +53,6 @@ private:
 	float computeCcsUsedPerBattle(Player& p);
 	std::string convertPath(const std::string& path);
 	std::vector<Observer*> observers;
+	int cycle=0;
 };
 

@@ -430,13 +430,13 @@ string Player::toString() const
 void Player::addWarShow(const AttackPair & warShow)
 {
 	history.addWarShow(warShow);
-	computeStats();
+	recomputeStats();
 }
 
 void Player::addClanGamesScore(const int score, const int cycle)
 {
 	history.addGamesScore(score, cycle);
-	computeStats();
+	recomputeStats();
 }
 
 void Player::setNotes(string text)
@@ -653,6 +653,11 @@ void Player::update(const int newAttacks, const int newDefenses, const int newDo
 void Player::computeStats()
 {
 	history.computeStats();
+}
+
+void Player::recomputeStats()
+{
+	history.recomputeStats();
 }
 
 void Player::setCycle(int cycle)

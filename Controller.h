@@ -15,11 +15,11 @@ public:
 	Controller();
 
 	void removePlayer(std::string name);
-	void updatePlayer(Player& player);
 	void addWarAttacks(std::string playerName, AttackPair warShow);
 	void addClanGamesScore(std::string playerName, int score);
 
-	void importUpdatedData(std::string path);
+	void importUpdatedData(string path);
+	void importCycleData(std::string path);
 	void loadStats();
 	void storeStats();
 	void storeTable();

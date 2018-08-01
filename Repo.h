@@ -8,7 +8,7 @@ public:
 	Repo();
 	void add(Player& p);
 	void remove(std::string name);
-	void updatePlayer(Player& p);
+	void updatePlayer(Player& p, string mode);
 	Player& getByName(std::string name);
 	Player& getById(std::string id);
 	Player& getByIndex(int idx);

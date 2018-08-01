@@ -1,18 +1,11 @@
 #include "stdafx.h"
 #include "Controller.h"
 
-Controller::Controller()
-{
+Controller::Controller(){}
 
-}
-
-void Controller::importUpdatedData(std::string path)
+void Controller::importUpdatedData(string path)
 {
-	/*
-	Load fresh data from the .csv dowloaded from clashofstats and increase the cycle counter
-	*/
 	ifstream freshFile(path);
-
 	char* line = new char[1300];
 	char* char_ptr;				//ptr to the current field in the line
 
@@ -21,7 +14,6 @@ void Controller::importUpdatedData(std::string path)
 
 	//read the first line with the headers, we don't need it
 	freshFile.getline(line, 1298);
-	cycle++;
 	while (!freshFile.eof()) {
 		freshFile.getline(line, 1290);
 
@@ -35,7 +27,50 @@ void Controller::importUpdatedData(std::string path)
 
 		if (repo.existsByName(player.getName())) {
 			//if it already exists, load the new stats into the history vectors
-			updatePlayer(player);
+			repo.updatePlayer(player, "update");
+			notifyObservers();
+		}
+		else {
+			player.computeStats();
+			repo.add(player);
+			notifyObservers();
+		}
+	}
+	delete line;
+
+	freshFile.close();
+}
+
+void Controller::importCycleData(std::string path)
+{
+	/*
+	Load fresh data from the .csv dowloaded from clashofstats and increase the cycle counter
+	*/
+	ifstream cycleFile(path);
+
+	char* line = new char[1300];
+	char* char_ptr;				//ptr to the current field in the line
+
+	if (!cycleFile.is_open())
+		throw ControllerException{ "Could not open file " + path };
+
+	//read the first line with the headers, we don't need it
+	cycleFile.getline(line, 1298);
+	cycle++;
+	while (!cycleFile.eof()) {
+		cycleFile.getline(line, 1290);
+
+		if (strcmp(line, "") == 0)
+			//last line
+			break;
+
+		Player player{};
+		//read from file and compute the stats
+		player.loadFromFreshFile(line);
+
+		if (repo.existsByName(player.getName())) {
+			//if it already exists, load the new stats into the history vectors
+			repo.updatePlayer(player, "cycle");
 		}
 		else {
 			player.computeStats();
@@ -47,7 +82,7 @@ void Controller::importUpdatedData(std::string path)
 	for (Player& p : repo.getAll()) {
 		p.setCycle(cycle);
 	}
-	freshFile.close();
+	cycleFile.close();
 }
 
 void Controller::loadStats()
@@ -126,19 +161,9 @@ void Controller::storeTable()
 	tbl.close();
 }
 
-void Controller::removePlayer(string tag)
+void Controller::removePlayer(string name)
 {
-	repo.remove(tag);
-	notifyObservers();
-}
-
-void Controller::updatePlayer(Player & player)
-{
-	/*
-		Add the new attacks, defenses, donations and requests to the history vectors
-	*/
-	repo.updatePlayer(player);
-
+	repo.remove(name);
 	notifyObservers();
 }
 

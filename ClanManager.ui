@@ -325,7 +325,7 @@
    <widget class="QRadioButton" name="first1star">
     <property name="geometry">
      <rect>
-      <x>340</x>
+      <x>370</x>
       <y>570</y>
       <width>41</width>
       <height>20</height>
@@ -341,7 +341,7 @@
    <widget class="QRadioButton" name="first2star">
     <property name="geometry">
      <rect>
-      <x>390</x>
+      <x>410</x>
       <y>570</y>
       <width>41</width>
       <height>20</height>
@@ -357,7 +357,7 @@
    <widget class="QRadioButton" name="first3star">
     <property name="geometry">
      <rect>
-      <x>440</x>
+      <x>450</x>
       <y>570</y>
       <width>41</width>
       <height>20</height>
@@ -425,7 +425,7 @@
    <widget class="QRadioButton" name="second3star">
     <property name="geometry">
      <rect>
-      <x>440</x>
+      <x>450</x>
       <y>690</y>
       <width>41</width>
       <height>20</height>
@@ -467,7 +467,7 @@
    <widget class="QRadioButton" name="second1star">
     <property name="geometry">
      <rect>
-      <x>340</x>
+      <x>370</x>
       <y>690</y>
       <width>41</width>
       <height>20</height>
@@ -483,7 +483,7 @@
    <widget class="QRadioButton" name="second2star">
     <property name="geometry">
      <rect>
-      <x>390</x>
+      <x>410</x>
       <y>690</y>
       <width>41</width>
       <height>20</height>
@@ -1934,6 +1934,38 @@
      <string/>
     </property>
    </widget>
+   <widget class="QRadioButton" name="first0Star">
+    <property name="geometry">
+     <rect>
+      <x>330</x>
+      <y>570</y>
+      <width>41</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>0*</string>
+    </property>
+    <property name="autoExclusive">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="second0Star">
+    <property name="geometry">
+     <rect>
+      <x>330</x>
+      <y>690</y>
+      <width>41</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>0*</string>
+    </property>
+    <property name="autoExclusive">
+     <bool>false</bool>
+    </property>
+   </widget>
    <zorder>enemyFirst</zorder>
    <zorder>gridLayoutWidget</zorder>
    <zorder>donationsRadio</zorder>
@@ -1982,6 +2014,8 @@
    <zorder>removePlayer</zorder>
    <zorder>label_12</zorder>
    <zorder>cycleLabel</zorder>
+   <zorder>first0Star</zorder>
+   <zorder>second0Star</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -1996,8 +2030,9 @@
     <property name="title">
      <string>Actions</string>
     </property>
-    <addaction name="actionLoadFreshData"/>
+    <addaction name="actionLoadCycleData"/>
     <addaction name="actionCreateTableFile"/>
+    <addaction name="actionLoadUpdatedData"/>
    </widget>
    <widget class="QMenu" name="menuOptions">
     <property name="title">
@@ -2024,9 +2059,9 @@
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="actionLoadFreshData">
+  <action name="actionLoadCycleData">
    <property name="text">
-    <string>Load fresh data</string>
+    <string>Load cycle fresh data</string>
    </property>
    <property name="whatsThis">
     <string>Load fresh data from a .csv file</string>
@@ -2048,6 +2083,11 @@
   <action name="actionAbout">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="actionLoadUpdatedData">
+   <property name="text">
+    <string>Load updated data</string>
    </property>
   </action>
  </widget>

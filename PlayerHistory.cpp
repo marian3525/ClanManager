@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "PlayerHistory.h"
 
-
 PlayerHistory::PlayerHistory()
 {
 }
@@ -362,6 +361,17 @@ void PlayerHistory::addDonations(const int donations)
 	this->donations.push_back(donations);
 }
 
+void PlayerHistory::updateDonations(const int newDonations)
+{
+	if (donations.size() != 0) {
+		donations.pop_back();
+		donations.push_back(newDonations);
+		return;
+	}
+	//shouldn't get here, getting here means the function was called without loading any data first
+	throw exception();
+}
+
 int PlayerHistory::getLastDonations() const
 {
 	if (donations.size() == 0) {
@@ -380,6 +390,16 @@ std::vector<int> PlayerHistory::getDonations() const
 void PlayerHistory::addRequests(const int requests)
 {
 	this->requests.push_back(requests);
+}
+
+void PlayerHistory::updateRequests(const int newRequests)
+{
+	if (requests.size() != 0) {
+		requests.pop_back();
+		requests.push_back(newRequests);
+		return;
+	}
+	throw exception();
 }
 
 int PlayerHistory::getLastRequests() const
@@ -422,6 +442,16 @@ void PlayerHistory::addAttacks(const int attacks)
 	this->attacks.push_back(attacks);
 }
 
+void PlayerHistory::updateAttacks(const int newAttacks)
+{
+	if (attacks.size() != 0) {
+		attacks.pop_back();
+		attacks.push_back(newAttacks);
+		return;
+	}
+	throw exception();
+}
+
 int PlayerHistory::getLastAttacks() const
 {
 	if (attacks.size() == 0) {
@@ -440,6 +470,16 @@ std::vector<int> PlayerHistory::getAttacks() const
 void PlayerHistory::addDefenses(const int defenses)
 {
 	this->defenses.push_back(defenses);
+}
+
+void PlayerHistory::updateDefenses(const int newDefenses)
+{
+	if (defenses.size() != 0) {
+		defenses.pop_back();
+		defenses.push_back(newDefenses);
+		return;
+	}
+	throw exception();
 }
 
 int PlayerHistory::getLastDefenses() const
@@ -520,10 +560,11 @@ void PlayerHistory::recomputeStats()
 	activities.push_back(activity);
 
 	//contributions
-	int adj = 5;
-	int contribution = adj * getCycleWarScore(currentCycle);
-	contribution += getLastDonations() + getCycleGamesScore(currentCycle) + adj * getCycleWarScore(currentCycle);
-	contribution *= 3;
+	float adj = 2;
+	int contribution = getCycleWarScore(currentCycle);
+	contribution = floor(contribution * adj);
+	contribution += (getLastDonations() + getCycleGamesScore(currentCycle));
+	
 
 	if (contributions.size() != 0) {
 		contributions.pop_back();
@@ -541,6 +582,21 @@ void PlayerHistory::recomputeStats()
 	else {
 		ratio = contribution;
 	}
+	float donationRatio = 0;
+	if (getLastDonations() != 0) {
+		if (getLastRequests() != 0) {
+			donationRatio = (float)getLastDonations() / getLastRequests();
+		}
+		else {
+			donationRatio = 1;
+		}
+	}
+	else {
+		donationRatio = getLastDonations();
+	}
+	//pick the max from the 2 ratios to accomodate different play styles
+	ratio = max(ratio, donationRatio);
+
 	//replace the last recorded ratio
 	if (ratios.size() != 0) {
 		ratios.pop_back();
@@ -559,22 +615,37 @@ void PlayerHistory::computeStats()
 	activities.push_back(activity);
 
 	//contributions
-	int adj = 5;
-	int contribution = adj * getCycleWarScore(currentCycle);
-	contribution += getLastDonations() + getCycleGamesScore(currentCycle) + adj * getCycleWarScore(currentCycle);
-	contribution *= 3;
+	float adj = 2;
+	int contribution = getCycleWarScore(currentCycle);
+	contribution = floor(contribution * adj);
+	contribution += (getLastDonations() + getCycleGamesScore(currentCycle));
 	contributions.push_back(contribution);
 
 	//ratio adjusted for activity and CG&wars
 	float ratio = 0;
 	if (contribution != 0) {
 		if (activity != 0)
-			ratio = (float)contribution / activity;
+			ratio = (float) contribution / activity;
 		else
 			ratio = 1;
 	}
 	else {
 		ratio = contribution;
 	}
+	float donationRatio = 0;
+	if (getLastDonations() != 0) {
+		if (getLastRequests() != 0) {
+			donationRatio = (float) getLastDonations() / getLastRequests();
+		}
+		else {
+			donationRatio = 1;
+		}
+	}
+	else {
+		donationRatio = getLastDonations();
+	}
+	//pick the max from the 2 ratios to accomodate different play styles
+	ratio = max(ratio, donationRatio);
+
 	ratios.push_back(ratio);
 }

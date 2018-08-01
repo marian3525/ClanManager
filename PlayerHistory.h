@@ -29,10 +29,12 @@ public:
 	std::vector<int> getContribution() const;
 
 	void addDonations(const int donations);
+	void updateDonations(const int newDonations);
 	int getLastDonations() const;
 	std::vector<int> getDonations() const;
 
 	void addRequests(const int requests);
+	void updateRequests(const int newRequests);
 	int getLastRequests() const;
 	std::vector<int> getRequests() const;
 
@@ -41,10 +43,12 @@ public:
 	std::vector<AttackPair> getShows();
 
 	void addAttacks(const int attacks);
+	void updateAttacks(const int newAttacks);
 	int getLastAttacks() const;
 	std::vector<int> getAttacks() const;
 
 	void addDefenses(const int defenses);
+	void updateDefenses(const int newDefenses);
 	int getLastDefenses() const;
 	std::vector<int> getDefenses() const;
 

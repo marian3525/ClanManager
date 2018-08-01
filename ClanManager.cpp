@@ -14,7 +14,7 @@ ClanManager::ClanManager(Controller* controller, QWidget *parent)
 	}
 	catch (const ControllerException& e) {
 		//stats file not yet created. It means no data was imported into the app or the stat files were deleted, attempt to load from the fresh data file
-			onLoadFreshData();
+		onLoadCycleData();
 	}
 	bindWidgets();
 	addHeaders();
@@ -53,6 +53,7 @@ void ClanManager::bindWidgets()
 	addCGScore = findChild<QPushButton*>("addCGScore");
 
 	noShowFirst = findChild<QCheckBox*>("noShowFirst");
+	first0Star = findChild<QRadioButton*>("first0Star");
 	first1Star = findChild<QRadioButton*>("first1star");
 	first2Star = findChild<QRadioButton*>("first2star");
 	first3Star = findChild<QRadioButton*>("first3star");
@@ -61,6 +62,7 @@ void ClanManager::bindWidgets()
 	firstEnemy = findChild<QSpinBox*>("enemyFirst");
 
 	noShowSecond = findChild<QCheckBox*>("noShowSecond");
+	second0Star = findChild<QRadioButton*>("second0Star");
 	second1Star = findChild<QRadioButton*>("second1star");
 	second2Star = findChild<QRadioButton*>("second2star");
 	second3Star = findChild<QRadioButton*>("second3star");
@@ -73,7 +75,8 @@ void ClanManager::bindWidgets()
 
 	removePlayerButton = findChild<QPushButton*>("removePlayer");
 
-	loadFreshData = findChild<QAction*>("actionLoadFreshData");
+	loadCycleData = findChild<QAction*>("actionLoadCycleData");
+	loadUpdatedData = findChild<QAction*>("actionLoadUpdatedData");
 	createTableFile = findChild<QAction*>("actionCreateTableFile");
 	help = findChild<QAction*>("actionHelp");
 	about = findChild<QAction*>("actionAbout");
@@ -97,16 +100,19 @@ void ClanManager::bindWidgets()
 	connect(addWarAttackButton, &QPushButton::clicked, this, &ClanManager::onAddWarAttack);
 	connect(addCGScore, &QPushButton::clicked, this, &ClanManager::onAddCGScore);
 	connect(noShowFirst, &QCheckBox::clicked, this, &ClanManager::onNoShowFirst);
+	connect(first0Star, &QRadioButton::clicked, this, &ClanManager::onFirst0Star);
 	connect(first1Star, &QRadioButton::clicked, this, &ClanManager::onFirst1Star);
 	connect(first2Star, &QRadioButton::clicked, this, &ClanManager::onFirst2Star);
 	connect(first3Star, &QRadioButton::clicked, this, &ClanManager::onFirst3Star);
 	connect(noShowSecond, &QCheckBox::clicked, this, &ClanManager::onNoShowSecond);
+	connect(second0Star, &QRadioButton::clicked, this, &ClanManager::onSecond0Star);
 	connect(second1Star, &QRadioButton::clicked, this, &ClanManager::onSecond1Star);
 	connect(second2Star, &QRadioButton::clicked, this, &ClanManager::onSecond2Star);
 	connect(second3Star, &QRadioButton::clicked, this, &ClanManager::onSecond3Star);
 	connect(removePlayerButton, &QPushButton::clicked, this, &ClanManager::onRemove);
 	//in the menu:
-	connect(loadFreshData, &QAction::triggered, this, &ClanManager::onLoadFreshData);
+	connect(loadCycleData, &QAction::triggered, this, &ClanManager::onLoadCycleData);
+	connect(loadUpdatedData, &QAction::triggered, this, &ClanManager::onLoadUpdatedData);
 	connect(createTableFile, &QAction::triggered, this, &ClanManager::onCreateTableFile);
 	connect(help, &QAction::triggered, this, &ClanManager::onHelp);
 	connect(about, &QAction::triggered, this, &ClanManager::onAbout);
@@ -191,6 +197,9 @@ void ClanManager::populateRows()
 
 int ClanManager::getStar1Selected()
 {
+	if (first0Star->isChecked()) {
+		return 0;
+	}
 	if (first1Star->isChecked()) {
 		return 1;
 	}
@@ -204,6 +213,9 @@ int ClanManager::getStar1Selected()
 
 int ClanManager::getStar2Selected()
 {
+	if (second0Star->isChecked()) {
+		return 0;
+	}
 	if (second1Star->isChecked()) {
 		return 1;
 	}
@@ -336,6 +348,17 @@ void ClanManager::onAddWarAttack()
 	controller->sort(lastSort);
 }
 
+
+void ClanManager::onNoShowFirst()
+{
+
+}
+
+void ClanManager::onNoShowSecond()
+{
+}
+
+
 void ClanManager::onAddCGScore()
 {
 	int score = atoi(CGScore->text().toStdString().c_str());
@@ -351,49 +374,59 @@ void ClanManager::onAddCGScore()
 	controller->sort(lastSort);
 }
 
+void ClanManager::onFirst0Star()
+{
+	first1Star->setChecked(false);
+	first2Star->setChecked(false);
+	first3Star->setChecked(false);
+}
+
 void ClanManager::onFirst1Star()
 {
+	first0Star->setChecked(false);
 	first2Star->setChecked(false);
 	first3Star->setChecked(false);
 }
 
 void ClanManager::onFirst2Star()
 {
+	first0Star->setChecked(false);
 	first1Star->setChecked(false);
 	first3Star->setChecked(false);
 }
 
 void ClanManager::onFirst3Star()
 {
+	first0Star->setChecked(false);
 	first1Star->setChecked(false);
 	first2Star->setChecked(false);
 }
 
-void ClanManager::onSecond1Star()
-{
+void ClanManager::onSecond0Star() {
+	second1Star->setChecked(false);
 	second2Star->setChecked(false);
 	second3Star->setChecked(false);
+}
 
+void ClanManager::onSecond1Star()
+{
+	second0Star->setChecked(false);
+	second2Star->setChecked(false);
+	second3Star->setChecked(false);
 }
 
 void ClanManager::onSecond2Star()
 {
+	second0Star->setChecked(false);
 	second1Star->setChecked(false);
 	second3Star->setChecked(false);
 }
 
 void ClanManager::onSecond3Star()
 {
+	second0Star->setChecked(false);
 	second1Star->setChecked(false);
 	second2Star->setChecked(false);
-}
-
-void ClanManager::onNoShowFirst()
-{
-}
-
-void ClanManager::onNoShowSecond()
-{
 }
 
 void ClanManager::onRemove()
@@ -407,7 +440,7 @@ void ClanManager::onRemove()
 	}
 }
 
-void ClanManager::onLoadFreshData()
+void ClanManager::onLoadCycleData()
 { 
 	QStringList fileNames;
 	do {
@@ -431,11 +464,29 @@ void ClanManager::onLoadFreshData()
 	} while (fileNames.size() == 0);
 	string path = fileNames[0].toStdString();
 	try {
-		controller->importUpdatedData(path);
+		controller->importCycleData(path);
 	}
 	catch (const IOException& e) {
 		QMessageBox::warning(this, "Invalid format in file. The application will now exit", QString::fromStdString(e.getMessage()));
 		exit(0);
+	}
+}
+
+void ClanManager::onLoadUpdatedData()
+{
+	/*
+		When loading a fresh file from the menu
+	*/
+	QStringList fileNames;
+	fileNames = QFileDialog::getOpenFileNames(this, tr("Select Fresh Data file"), "", tr("CSV files (*.csv)"));
+	if (fileNames.size() != 0) {
+		string path = fileNames[0].toStdString();
+		try {
+			controller->importUpdatedData(path);
+		}
+		catch (const IOException& e) {
+			QMessageBox::warning(this, "Invalid format in file. Data will not be loaded", QString::fromStdString(e.getMessage()));
+		}
 	}
 }
 

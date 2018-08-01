@@ -12,27 +12,41 @@ void Repo::add(Player& p)
 	players.push_back(p);
 }
 
-void Repo::remove(string tag)
+void Repo::remove(string name)
 {
-	auto it = find_if(players.begin(), players.end(), [&tag](Player& p) {return p.getTag() == tag; });
+	auto it = find_if(players.begin(), players.end(), [&name](Player& p) {return p.getName() == name; });
 	if(it != players.end())
 		players.erase(it);
 }
 
-void Repo::updatePlayer(Player& player)
+void Repo::updatePlayer(Player& player, string mode)
 {
 	/*
 		player will contain vectors of size 1 in history for attacks, defenses, donations and requests
 		Add them to p
+		Mode: -cycle: to add new entries to the history vectors + compute stats
+			  -update: replace the last entry in the vectors + recompute stats
+		Ugly...to be restructured
 	*/
 	Player& p = getByName(player.getName());
-	//add the 4 new values to the vectors
-	p.history.addDefenses(player.getLastDefenseWins());
-	p.history.addAttacks(player.getLastAttackWins());
-	p.history.addDonations(player.getLastTroopsDonated());
-	p.history.addRequests(player.getLastTroopsRequested());
-	//update stats
-	p.computeStats();
+	if (mode == "cycle") {
+		//add the 4 new values to the vectors
+		p.history.addDefenses(player.getLastDefenseWins());
+		p.history.addAttacks(player.getLastAttackWins());
+		p.history.addDonations(player.getLastTroopsDonated());
+		p.history.addRequests(player.getLastTroopsRequested());
+		//create stats
+		p.computeStats();
+	}
+	
+	if (mode == "update") {
+		p.history.updateDefenses(player.getLastDefenseWins());
+		p.history.updateAttacks(player.getLastAttackWins());
+		p.history.updateDonations(player.getLastTroopsDonated());
+		p.history.updateRequests(player.getLastTroopsRequested());
+		//update stats
+		p.recomputeStats();
+	}
 }
 
 Player& Repo::getByName(string name)

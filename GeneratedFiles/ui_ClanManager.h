@@ -36,10 +36,11 @@ QT_BEGIN_NAMESPACE
 class Ui_ClanManagerClass
 {
 public:
-    QAction *actionLoadFreshData;
+    QAction *actionLoadCycleData;
     QAction *actionCreateTableFile;
     QAction *actionHelp;
     QAction *actionAbout;
+    QAction *actionLoadUpdatedData;
     QWidget *centralWidget;
     QWidget *gridLayoutWidget;
     QGridLayout *gridLayout;
@@ -91,6 +92,8 @@ public:
     QPushButton *removePlayer;
     QLabel *label_12;
     QLabel *cycleLabel;
+    QRadioButton *first0Star;
+    QRadioButton *second0Star;
     QMenuBar *menuBar;
     QMenu *menuActions;
     QMenu *menuOptions;
@@ -106,15 +109,17 @@ public:
         QFont font;
         font.setPointSize(10);
         ClanManagerClass->setFont(font);
-        actionLoadFreshData = new QAction(ClanManagerClass);
-        actionLoadFreshData->setObjectName(QStringLiteral("actionLoadFreshData"));
-        actionLoadFreshData->setAutoRepeat(false);
+        actionLoadCycleData = new QAction(ClanManagerClass);
+        actionLoadCycleData->setObjectName(QStringLiteral("actionLoadCycleData"));
+        actionLoadCycleData->setAutoRepeat(false);
         actionCreateTableFile = new QAction(ClanManagerClass);
         actionCreateTableFile->setObjectName(QStringLiteral("actionCreateTableFile"));
         actionHelp = new QAction(ClanManagerClass);
         actionHelp->setObjectName(QStringLiteral("actionHelp"));
         actionAbout = new QAction(ClanManagerClass);
         actionAbout->setObjectName(QStringLiteral("actionAbout"));
+        actionLoadUpdatedData = new QAction(ClanManagerClass);
+        actionLoadUpdatedData->setObjectName(QStringLiteral("actionLoadUpdatedData"));
         centralWidget = new QWidget(ClanManagerClass);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         gridLayoutWidget = new QWidget(centralWidget);
@@ -209,15 +214,15 @@ public:
         label_4->setGeometry(QRect(340, 520, 141, 16));
         first1star = new QRadioButton(centralWidget);
         first1star->setObjectName(QStringLiteral("first1star"));
-        first1star->setGeometry(QRect(340, 570, 41, 20));
+        first1star->setGeometry(QRect(370, 570, 41, 20));
         first1star->setAutoExclusive(false);
         first2star = new QRadioButton(centralWidget);
         first2star->setObjectName(QStringLiteral("first2star"));
-        first2star->setGeometry(QRect(390, 570, 41, 20));
+        first2star->setGeometry(QRect(410, 570, 41, 20));
         first2star->setAutoExclusive(false);
         first3star = new QRadioButton(centralWidget);
         first3star->setObjectName(QStringLiteral("first3star"));
-        first3star->setGeometry(QRect(440, 570, 41, 20));
+        first3star->setGeometry(QRect(450, 570, 41, 20));
         first3star->setChecked(true);
         first3star->setAutoExclusive(false);
         firstPercent = new QLineEdit(centralWidget);
@@ -234,7 +239,7 @@ public:
         label_7->setGeometry(QRect(340, 630, 81, 21));
         second3star = new QRadioButton(centralWidget);
         second3star->setObjectName(QStringLiteral("second3star"));
-        second3star->setGeometry(QRect(440, 690, 41, 20));
+        second3star->setGeometry(QRect(450, 690, 41, 20));
         second3star->setChecked(true);
         second3star->setAutoExclusive(false);
         secondPercent = new QLineEdit(centralWidget);
@@ -245,11 +250,11 @@ public:
         label_8->setGeometry(QRect(340, 750, 81, 21));
         second1star = new QRadioButton(centralWidget);
         second1star->setObjectName(QStringLiteral("second1star"));
-        second1star->setGeometry(QRect(340, 690, 41, 20));
+        second1star->setGeometry(QRect(370, 690, 41, 20));
         second1star->setAutoExclusive(false);
         second2star = new QRadioButton(centralWidget);
         second2star->setObjectName(QStringLiteral("second2star"));
-        second2star->setGeometry(QRect(390, 690, 41, 20));
+        second2star->setGeometry(QRect(410, 690, 41, 20));
         second2star->setAutoExclusive(false);
         label_9 = new QLabel(centralWidget);
         label_9->setObjectName(QStringLiteral("label_9"));
@@ -481,6 +486,14 @@ public:
         cycleLabel = new QLabel(centralWidget);
         cycleLabel->setObjectName(QStringLiteral("cycleLabel"));
         cycleLabel->setGeometry(QRect(730, 0, 55, 16));
+        first0Star = new QRadioButton(centralWidget);
+        first0Star->setObjectName(QStringLiteral("first0Star"));
+        first0Star->setGeometry(QRect(330, 570, 41, 20));
+        first0Star->setAutoExclusive(false);
+        second0Star = new QRadioButton(centralWidget);
+        second0Star->setObjectName(QStringLiteral("second0Star"));
+        second0Star->setGeometry(QRect(330, 690, 41, 20));
+        second0Star->setAutoExclusive(false);
         ClanManagerClass->setCentralWidget(centralWidget);
         enemyFirst->raise();
         gridLayoutWidget->raise();
@@ -530,6 +543,8 @@ public:
         removePlayer->raise();
         label_12->raise();
         cycleLabel->raise();
+        first0Star->raise();
+        second0Star->raise();
         menuBar = new QMenuBar(ClanManagerClass);
         menuBar->setObjectName(QStringLiteral("menuBar"));
         menuBar->setGeometry(QRect(0, 0, 1631, 25));
@@ -550,8 +565,9 @@ public:
         menuBar->addAction(menuActions->menuAction());
         menuBar->addAction(menuOptions->menuAction());
         menuBar->addAction(menuHelp->menuAction());
-        menuActions->addAction(actionLoadFreshData);
+        menuActions->addAction(actionLoadCycleData);
         menuActions->addAction(actionCreateTableFile);
+        menuActions->addAction(actionLoadUpdatedData);
         menuHelp->addAction(actionHelp);
         menuHelp->addAction(actionAbout);
 
@@ -563,13 +579,14 @@ public:
     void retranslateUi(QMainWindow *ClanManagerClass)
     {
         ClanManagerClass->setWindowTitle(QApplication::translate("ClanManagerClass", "ClanManager", nullptr));
-        actionLoadFreshData->setText(QApplication::translate("ClanManagerClass", "Load fresh data", nullptr));
+        actionLoadCycleData->setText(QApplication::translate("ClanManagerClass", "Load cycle fresh data", nullptr));
 #ifndef QT_NO_WHATSTHIS
-        actionLoadFreshData->setWhatsThis(QApplication::translate("ClanManagerClass", "Load fresh data from a .csv file", nullptr));
+        actionLoadCycleData->setWhatsThis(QApplication::translate("ClanManagerClass", "Load fresh data from a .csv file", nullptr));
 #endif // QT_NO_WHATSTHIS
         actionCreateTableFile->setText(QApplication::translate("ClanManagerClass", "Create table file", nullptr));
         actionHelp->setText(QApplication::translate("ClanManagerClass", "Help", nullptr));
         actionAbout->setText(QApplication::translate("ClanManagerClass", "About", nullptr));
+        actionLoadUpdatedData->setText(QApplication::translate("ClanManagerClass", "Load updated data", nullptr));
         donationsRadio->setText(QApplication::translate("ClanManagerClass", "Donations", nullptr));
         requestsRadio->setText(QApplication::translate("ClanManagerClass", "Requests", nullptr));
         attacksRadio->setText(QApplication::translate("ClanManagerClass", "Attacks", nullptr));
@@ -606,6 +623,8 @@ public:
         removePlayer->setText(QApplication::translate("ClanManagerClass", "Remove Player", nullptr));
         label_12->setText(QApplication::translate("ClanManagerClass", "Cycle #:", nullptr));
         cycleLabel->setText(QString());
+        first0Star->setText(QApplication::translate("ClanManagerClass", "0*", nullptr));
+        second0Star->setText(QApplication::translate("ClanManagerClass", "0*", nullptr));
         menuActions->setTitle(QApplication::translate("ClanManagerClass", "Actions", nullptr));
         menuOptions->setTitle(QApplication::translate("ClanManagerClass", "Options", nullptr));
         menuHelp->setTitle(QApplication::translate("ClanManagerClass", "Extra", nullptr));

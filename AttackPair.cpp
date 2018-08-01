@@ -57,8 +57,8 @@ int AttackPair::getPerformance()
 				switch (stars) {
 				case 0:score -= 50; break;
 				case 1:score -= 30; break;
-				case 2:score += 50; break;
-				case 3:score += 100; break;
+				case 2:score += 100; break;
+				case 3:score += 150; break;
 				}
 				break;
 			case 11:
@@ -110,8 +110,8 @@ int AttackPair::getPerformance()
 				switch (stars) {
 				case 0:score -= 70; break;
 				case 1:score -= 40; break;
-				case 2:score += 50; break;
-				case 3:score += 100; break;
+				case 2:score += 70; break;
+				case 3:score += 150; break;
 				}
 				break;
 			case 10:

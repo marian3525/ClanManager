@@ -68,6 +68,7 @@ public:
 	std::vector<AttackPair> getWarAttacks() const;
 
 	void computeStats();
+	void recomputeStats();
 	void setCycle(int cycle);
 
 private:

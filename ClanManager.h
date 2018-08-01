@@ -40,6 +40,7 @@ private:
 	QPushButton* addCGScore;
 
 	QCheckBox* noShowFirst;
+	QRadioButton* first0Star;
 	QRadioButton* first1Star;
 	QRadioButton* first2Star;
 	QRadioButton* first3Star;
@@ -48,6 +49,7 @@ private:
 	QSpinBox* firstEnemy;
 
 	QCheckBox* noShowSecond;
+	QRadioButton* second0Star;
 	QRadioButton* second1Star;
 	QRadioButton* second2Star;
 	QRadioButton* second3Star;
@@ -63,7 +65,8 @@ private:
 
 	QLabel* cycleIndicator;
 
-	QAction* loadFreshData;
+	QAction* loadCycleData;
+	QAction* loadUpdatedData;
 	QAction* createTableFile;
 	QAction* help;
 	QAction* about;
@@ -95,10 +98,12 @@ public slots:
 	void onAddWarAttack();
 	void onAddCGScore();
 
+	void onFirst0Star();
 	void onFirst1Star();
 	void onFirst2Star();
 	void onFirst3Star();
 
+	void onSecond0Star();
 	void onSecond1Star();
 	void onSecond2Star();
 	void onSecond3Star();
@@ -108,7 +113,8 @@ public slots:
 
 	void onRemove();
 
-	void onLoadFreshData();
+	void onLoadUpdatedData();
+	void onLoadCycleData();
 	void onCreateTableFile();
 	void onHelp();
 	void onAbout();

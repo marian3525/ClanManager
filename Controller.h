@@ -37,7 +37,7 @@ public:
 
 	enum SortMode {
 		donationInc, donationDec, requestInc, requestDec, xp, townhall, attackWins, defenseWins, ratioInc, ratioDec,
-		warStars, trophies, versusTrophies, legendTrophies, ratioAdj, contribution, activityMetric
+		warStars, trophies, versusTrophies, legendTrophies, ratioAdj, contribution, activityMetric, warScore
 	};
 	void sort(SortMode mode);
 	int getCycle() const { return cycle; }

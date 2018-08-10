@@ -266,6 +266,7 @@ void PlayerHistory::readHistoryFromStatsLine(char * line)
 		int cycle = stoi(ptr);
 		ClanGamesScore gamesScore{ scores, cycle };
 		this->gamesScores.push_back(gamesScore);
+
 		ptr = strtok(NULL, ",");
 	}
 
@@ -364,8 +365,15 @@ void PlayerHistory::addDonations(const int donations)
 void PlayerHistory::updateDonations(const int newDonations)
 {
 	if (donations.size() != 0) {
+		/*
+			If a player leaves the clan and returns, the donations will be reset
+			When loading a fresh file, keep track of the total donations and add the new (lower) donations
+			to the old value
+		*/
+		int don=0;
+		newDonations < donations.back() ? don += (donations.back() + newDonations) : don = newDonations;
 		donations.pop_back();
-		donations.push_back(newDonations);
+		donations.push_back(don);
 		return;
 	}
 	//shouldn't get here, getting here means the function was called without loading any data first
@@ -395,8 +403,10 @@ void PlayerHistory::addRequests(const int requests)
 void PlayerHistory::updateRequests(const int newRequests)
 {
 	if (requests.size() != 0) {
+		int req = 0;
+		req < requests.back() ? req += (requests.back() + newRequests) : req = newRequests;
 		requests.pop_back();
-		requests.push_back(newRequests);
+		requests.push_back(req);
 		return;
 	}
 	throw exception();
@@ -445,8 +455,10 @@ void PlayerHistory::addAttacks(const int attacks)
 void PlayerHistory::updateAttacks(const int newAttacks)
 {
 	if (attacks.size() != 0) {
+		int att = 0;
+		newAttacks < attacks.back() ? att += (attacks.back() + newAttacks) : att = newAttacks;
 		attacks.pop_back();
-		attacks.push_back(newAttacks);
+		attacks.push_back(att);
 		return;
 	}
 	throw exception();
@@ -475,8 +487,10 @@ void PlayerHistory::addDefenses(const int defenses)
 void PlayerHistory::updateDefenses(const int newDefenses)
 {
 	if (defenses.size() != 0) {
+		int def = 0;
+		newDefenses < defenses.back() ? def += (defenses.back() + newDefenses) : def = newDefenses;
 		defenses.pop_back();
-		defenses.push_back(newDefenses);
+		defenses.push_back(def);
 		return;
 	}
 	throw exception();
@@ -524,7 +538,7 @@ int PlayerHistory::getCycleWarScore(int cycle)
 		return the sum of the war scores from the wars of the given cycle
 	*/
 	int sum = 0;
-	for(AttackPair& p:warAttacks){
+	for(AttackPair& p:warAttacks) {
 		if (p.getCycle() == cycle) 
 			sum += p.getPerformance(); 
 	}
@@ -537,7 +551,10 @@ int PlayerHistory::getCycleGamesScore(int cycle)
 		return the sun of the clan games scores from the games in the given cycle
 	*/
 	int sum = 0;
-	for_each(gamesScores.begin(), gamesScores.end(), [&sum, &cycle](const ClanGamesScore& score) {if (score.getCycle() == cycle) sum += score.getScore();});
+	for (const ClanGamesScore& score : gamesScores) {
+		if (score.getCycle() == cycle)
+			sum += score.getScore();
+	}
 	return sum;
 }
 

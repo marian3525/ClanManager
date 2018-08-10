@@ -55,7 +55,7 @@ public:
     QRadioButton *trophiesRadio;
     QRadioButton *versusTrophiesRadio;
     QRadioButton *legendRadio;
-    QRadioButton *adjRatioRadio;
+    QRadioButton *warScoreRadio;
     QRadioButton *contributionRadio;
     QRadioButton *activityRadio;
     QFrame *line;
@@ -165,9 +165,9 @@ public:
         legendRadio = new QRadioButton(centralWidget);
         legendRadio->setObjectName(QStringLiteral("legendRadio"));
         legendRadio->setGeometry(QRect(350, 270, 141, 20));
-        adjRatioRadio = new QRadioButton(centralWidget);
-        adjRatioRadio->setObjectName(QStringLiteral("adjRatioRadio"));
-        adjRatioRadio->setGeometry(QRect(350, 300, 131, 20));
+        warScoreRadio = new QRadioButton(centralWidget);
+        warScoreRadio->setObjectName(QStringLiteral("warScoreRadio"));
+        warScoreRadio->setGeometry(QRect(350, 300, 131, 20));
         contributionRadio = new QRadioButton(centralWidget);
         contributionRadio->setObjectName(QStringLiteral("contributionRadio"));
         contributionRadio->setGeometry(QRect(350, 330, 111, 20));
@@ -507,7 +507,7 @@ public:
         trophiesRadio->raise();
         versusTrophiesRadio->raise();
         legendRadio->raise();
-        adjRatioRadio->raise();
+        warScoreRadio->raise();
         contributionRadio->raise();
         activityRadio->raise();
         line->raise();
@@ -581,12 +581,18 @@ public:
         ClanManagerClass->setWindowTitle(QApplication::translate("ClanManagerClass", "ClanManager", nullptr));
         actionLoadCycleData->setText(QApplication::translate("ClanManagerClass", "Load cycle fresh data", nullptr));
 #ifndef QT_NO_WHATSTHIS
-        actionLoadCycleData->setWhatsThis(QApplication::translate("ClanManagerClass", "Load fresh data from a .csv file", nullptr));
+        actionLoadCycleData->setWhatsThis(QApplication::translate("ClanManagerClass", "Load a .csv file downloaded from clashofstats at the beginning of a cycle", nullptr));
 #endif // QT_NO_WHATSTHIS
         actionCreateTableFile->setText(QApplication::translate("ClanManagerClass", "Create table file", nullptr));
+#ifndef QT_NO_WHATSTHIS
+        actionCreateTableFile->setWhatsThis(QApplication::translate("ClanManagerClass", "Export a .csv table file in the directory of the executable. Can be loaded into Google Sheets", nullptr));
+#endif // QT_NO_WHATSTHIS
         actionHelp->setText(QApplication::translate("ClanManagerClass", "Help", nullptr));
         actionAbout->setText(QApplication::translate("ClanManagerClass", "About", nullptr));
         actionLoadUpdatedData->setText(QApplication::translate("ClanManagerClass", "Load updated data", nullptr));
+#ifndef QT_NO_WHATSTHIS
+        actionLoadUpdatedData->setWhatsThis(QApplication::translate("ClanManagerClass", "Load a .csv file from clashofstats anytime during a cycle to update donations and attacks.", nullptr));
+#endif // QT_NO_WHATSTHIS
         donationsRadio->setText(QApplication::translate("ClanManagerClass", "Donations", nullptr));
         requestsRadio->setText(QApplication::translate("ClanManagerClass", "Requests", nullptr));
         attacksRadio->setText(QApplication::translate("ClanManagerClass", "Attacks", nullptr));
@@ -597,7 +603,7 @@ public:
         trophiesRadio->setText(QApplication::translate("ClanManagerClass", "Trophies", nullptr));
         versusTrophiesRadio->setText(QApplication::translate("ClanManagerClass", "Versus Trophies", nullptr));
         legendRadio->setText(QApplication::translate("ClanManagerClass", "Legend Trophies", nullptr));
-        adjRatioRadio->setText(QApplication::translate("ClanManagerClass", "Adjusted Ratio", nullptr));
+        warScoreRadio->setText(QApplication::translate("ClanManagerClass", "War Score", nullptr));
         contributionRadio->setText(QApplication::translate("ClanManagerClass", "Contribution", nullptr));
         activityRadio->setText(QApplication::translate("ClanManagerClass", "Activity", nullptr));
         label_2->setText(QApplication::translate("ClanManagerClass", "Add CG score:", nullptr));

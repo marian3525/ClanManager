@@ -31,6 +31,7 @@ private:
 	QRadioButton* ratio;
 	QRadioButton* warStars;
 	QRadioButton* trophies;
+	QRadioButton* warScore;
 	QRadioButton* legendTrophies;
 	QRadioButton* versusTrophies;
 	QRadioButton* contribution;
@@ -91,6 +92,7 @@ public slots:
 	void onRatioSelected();
 	void onWarStarsSelected();
 	void onTrophiesSelected();
+	void onWarScoreSelected();
 	void onVersusTrophiesSelected();
 	void onLegendTrophiesSelected();
 	void onContributionSelected();

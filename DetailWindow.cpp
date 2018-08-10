@@ -154,12 +154,14 @@ void DetailWindow::populateWarAttacks()
 	pair<int, int> percent;
 	pair<int, int> enemy;
 	int performance;
+	string date;
 
 	for (AttackPair& show : player.getWarAttacks()) {
 		stars = show.getStars();
 		percent = show.getPercent();
 		enemy = show.getEnemy();
 		performance = show.getPerformance();
+		date = show.getDate();
 		//lazy formatting
 		output.append("Attack 1: ");
 		output.append(to_string(stars.first));
@@ -181,6 +183,8 @@ void DetailWindow::populateWarAttacks()
 
 		output.append("Performance: ");
 		output.append(to_string(performance));
+		output.append(" @ "+date);
+
 
 		strList.push_back(QString::fromStdString(output));
 		output.clear();

@@ -552,7 +552,6 @@ void Player::loadFromFile(char * line)
 	this->comments = comments;
 
 	history.setCcSize(getCcSize());		//set the cc size for the player and its history
-
 	history.readHistoryFromStatsLine(lineCopy);
 	free(lineCopy);
 }

@@ -164,7 +164,7 @@
      <string>Legend Trophies</string>
     </property>
    </widget>
-   <widget class="QRadioButton" name="adjRatioRadio">
+   <widget class="QRadioButton" name="warScoreRadio">
     <property name="geometry">
      <rect>
       <x>350</x>
@@ -174,7 +174,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Adjusted Ratio</string>
+     <string>War Score</string>
     </property>
    </widget>
    <widget class="QRadioButton" name="contributionRadio">
@@ -1978,7 +1978,7 @@
    <zorder>trophiesRadio</zorder>
    <zorder>versusTrophiesRadio</zorder>
    <zorder>legendRadio</zorder>
-   <zorder>adjRatioRadio</zorder>
+   <zorder>warScoreRadio</zorder>
    <zorder>contributionRadio</zorder>
    <zorder>activityRadio</zorder>
    <zorder>line</zorder>
@@ -2064,7 +2064,7 @@
     <string>Load cycle fresh data</string>
    </property>
    <property name="whatsThis">
-    <string>Load fresh data from a .csv file</string>
+    <string>Load a .csv file downloaded from clashofstats at the beginning of a cycle</string>
    </property>
    <property name="autoRepeat">
     <bool>false</bool>
@@ -2073,6 +2073,9 @@
   <action name="actionCreateTableFile">
    <property name="text">
     <string>Create table file</string>
+   </property>
+   <property name="whatsThis">
+    <string>Export a .csv table file in the directory of the executable. Can be loaded into Google Sheets</string>
    </property>
   </action>
   <action name="actionHelp">
@@ -2088,6 +2091,9 @@
   <action name="actionLoadUpdatedData">
    <property name="text">
     <string>Load updated data</string>
+   </property>
+   <property name="whatsThis">
+    <string>Load a .csv file from clashofstats anytime during a cycle to update donations and attacks.</string>
    </property>
   </action>
  </widget>

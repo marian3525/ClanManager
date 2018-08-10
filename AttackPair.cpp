@@ -1,9 +1,7 @@
 #include "stdafx.h"
 #include "AttackPair.h"
 
-AttackPair::AttackPair()
-{
-}
+AttackPair::AttackPair(){}
 
 void AttackPair::addAttack(int stars, int enemyLevel, int percent)
 {
@@ -25,6 +23,26 @@ void AttackPair::addAttack(int stars, int enemyLevel, int percent)
 		throw new WarException{ "Both attacks already done" };
 		break;
 	}
+}
+
+pair<int, int> AttackPair::getStars() const
+{
+	return pair<int, int>(starsFirst, starsSecond);
+}
+
+pair<int, int> AttackPair::getPercent() const
+{
+	return pair<int, int>(percentFirst, percentSecond);
+}
+
+pair<int, int> AttackPair::getEnemy() const
+{
+	return pair<int, int>(enemyFirst, enemySecond);
+}
+
+int AttackPair::getCycle() const
+{
+	return cycle;
 }
 
 int AttackPair::getPerformance()
@@ -417,6 +435,11 @@ int AttackPair::getPerformance()
 	}
 	performance = score;
 	return score;
+}
+
+string AttackPair::getDate() const
+{
+	return date;
 }
 
 std::string AttackPair::toString() const

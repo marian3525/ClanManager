@@ -44,6 +44,7 @@ void ClanManager::bindWidgets()
 	ratio = findChild<QRadioButton*>("ratioRadio");
 	warStars = findChild<QRadioButton*>("warStarsRadio");
 	trophies = findChild<QRadioButton*>("trophiesRadio");
+	warScore = findChild<QRadioButton*>("warScoreRadio");
 	versusTrophies = findChild<QRadioButton*>("versusTrophiesRadio");
 	legendTrophies = findChild<QRadioButton*>("legendRadio");
 	contribution = findChild<QRadioButton*>("contributionRadio");
@@ -92,6 +93,7 @@ void ClanManager::bindWidgets()
 	connect(ratio, &QRadioButton::clicked, this, &ClanManager::onRatioSelected);
 	connect(warStars, &QRadioButton::clicked, this, &ClanManager::onWarStarsSelected);
 	connect(trophies, &QRadioButton::clicked, this, &ClanManager::onTrophiesSelected);
+	connect(warScore, &QRadioButton::clicked, this, &ClanManager::onWarScoreSelected);
 	connect(versusTrophies, &QRadioButton::clicked, this, &ClanManager::onVersusTrophiesSelected);
 	connect(legendTrophies, &QRadioButton::clicked, this, &ClanManager::onLegendTrophiesSelected);
 	connect(contribution, &QRadioButton::clicked, this, &ClanManager::onContributionSelected);
@@ -282,6 +284,12 @@ void ClanManager::onTrophiesSelected()
 	lastSort = Controller::SortMode::trophies;
 }
 
+void ClanManager::onWarScoreSelected()
+{
+	controller->sort(Controller::SortMode::warScore);
+	lastSort = Controller::SortMode::warScore;
+}
+
 void ClanManager::onVersusTrophiesSelected()
 {
 	controller->sort(Controller::SortMode::versusTrophies);
@@ -344,7 +352,10 @@ void ClanManager::onAddWarAttack()
 			show.addAttack(stars2, enemy2, percent2);
 		}
 		controller->addWarAttacks(name, show);
+		break;
 	}
+	noShowFirst->setChecked(false);
+	noShowSecond->setChecked(false);
 	controller->sort(lastSort);
 }
 

@@ -12,11 +12,12 @@ public:
 		playerThLevel{ playerLevel }, starsFirst{ star1 }, starsSecond{ star2 }, percentFirst{ percent1 }, percentSecond{ percent2 },
 		enemyFirst{ enemy1 }, enemySecond{ enemy2 }, attacksDone{ attacks }, performance{ perf }, date{ date }, cycle{ cycle } {};
 	void addAttack(int stars, int enemyLevel, int percent=-1 );
-	pair<int, int> getStars() const { pair<int, int> a(starsFirst, starsSecond); return a; }
-	pair<int, int> getPercent() const { pair<int, int> a(percentFirst, percentSecond); return a; }
-	pair<int, int> getEnemy() const { pair<int, int> a(enemyFirst, enemySecond); return a; }
-	int getCycle() const { return cycle; }
+	pair<int, int> getStars() const;
+	pair<int, int> getPercent() const;
+	pair<int, int> getEnemy() const;
+	int getCycle() const;
 	int getPerformance();
+	string getDate() const;
 	string toString() const;
 	int attacksDone = 0;		//not -1 or the attacks won't be counter correctly
 

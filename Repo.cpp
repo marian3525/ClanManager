@@ -1,11 +1,7 @@
 #include "stdafx.h"
 #include "Repo.h"
 
-
-Repo::Repo()
-{
-
-}
+Repo::Repo(){}
 
 void Repo::add(Player& p)
 {	

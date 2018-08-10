@@ -110,11 +110,9 @@ void Controller::loadStats()
 		statsInput.getline(line, 10000);
 		
 		Player player{};
+		player.setCycle(cycle);
 		player.loadFromFile(line);
 		repo.add(player);
-	}
-	for (Player& p : repo.getAll()) {
-		p.setCycle(cycle);
 	}
 	statsInput.close();
 }
@@ -321,6 +319,8 @@ void Controller::sort(SortMode mode)
 	case contribution:
 		cmp = [](const Player& a, const Player& b) {return a.getLastContribution() > b.getLastContribution(); };
 		break;
+	case warScore:
+		cmp = [](const Player& a, const Player& b) {return a.getAvgWarScore() > b.getAvgWarScore(); };
 	}
 	std::sort(repo.getAll().begin(), repo.getAll().end(), cmp);
 	notifyObservers();
@@ -336,6 +336,7 @@ void Controller::notifyObservers()
 
 float Controller::computeActivityMetric(Player & p)
 {
+	//TODO: remove unused
 	float activityMetric;
 	//activity metric:
 	int cc_size;
@@ -371,6 +372,7 @@ float Controller::computeActivityMetric(Player & p)
 
 float Controller::computeRatioAdj(Player & p)
 {
+	//TODO, remove unused
 	float ratioAdj;
 	if (p.getLastAttackWins() != 0)
 		ratioAdj = p.getLastTroopsRequested() / p.getLastAttackWins();
@@ -386,6 +388,7 @@ float Controller::computeContribution(Player & p)
 {
 	/*
 		get the contribution for the current cycle
+		TODO remove, unused
 	*/
 	float contribution=0;
 
@@ -397,6 +400,7 @@ float Controller::computeContribution(Player & p)
 
 float Controller::computeCcsUsedPerBattle(Player & p)
 {
+	//TODO unused
 	float ccs;
 	if (p.getLastAttackWins() != 0)
 		ccs = p.getLastTroopsRequested() / p.getLastAttackWins();
@@ -410,6 +414,7 @@ float Controller::computeCcsUsedPerBattle(Player & p)
 
 string Controller::convertPath(const string & path)
 {
+	//TODO unused
 	string _path;
 
 	for (const char c : path) {
